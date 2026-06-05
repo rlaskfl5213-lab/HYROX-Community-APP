@@ -1,0 +1,804 @@
+// ============================================================
+// HYROX Coach Lab — Pace Planner (Statistics-based)
+// ============================================================
+
+// --- 스테이션 매핑 ---
+
+var FOOTER_TEXT = 'Made by RUNRUN NARI';
+var KAKAO_CHANNEL_URL = 'http://pf.kakao.com/_xbUHGX/friend';
+var CTA_TEXT = '무료 HYROX 훈련 자료 받기 →';
+var CTA_DESCRIPTION = '목표 로드맵은 훈련 방향을 제시합니다.\n더 자세한 HYROX 훈련 프로그램과 주간 가이드는 아래에서 확인할 수 있습니다.';
+
+var STATION_DISPLAY = [
+  { key: '1000m SkiErg',          name: 'SkiErg',            spec: '1,000m' },
+  { key: '50m Sled Push',         name: 'Sled Push',         spec: '50m' },
+  { key: '50m Sled Pull',         name: 'Sled Pull',         spec: '50m' },
+  { key: '80m Burpee Broad Jump', name: 'Burpee Broad Jump', spec: '80m' },
+  { key: '1000m Row',             name: 'Rowing',            spec: '1,000m' },
+  { key: '200m Farmers Carry',    name: 'Farmers Carry',     spec: '200m' },
+  { key: '100m Sandbag Lunges',   name: 'Sandbag Lunges',    spec: '100m' },
+  { key: 'Wall Balls',            name: 'Wall Balls',        spec: '100회' }
+];
+
+var DISTANCE_PER_ROUND = 1.0875;
+var TOTAL_DISTANCE = 8.7;
+var ROUNDS = 8;
+
+var FATIGUE_WEIGHTS = [1.00, 1.00, 1.05, 1.05, 1.06, 1.06, 1.06, 1.12];
+var FATIGUE_SUM = FATIGUE_WEIGHTS.reduce(function (a, b) { return a + b; }, 0);
+
+// --- 상태 ---
+
+var metaData = null;
+var divisionCache = {};
+var roadmapData = null;
+
+// --- 유틸리티 ---
+
+function formatTime(totalSeconds) {
+  var sec = Math.round(totalSeconds);
+  var h = Math.floor(sec / 3600);
+  var m = Math.floor((sec % 3600) / 60);
+  var s = sec % 60;
+  if (h > 0) {
+    return h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function formatPace(secondsPerKm) {
+  var sec = Math.round(secondsPerKm);
+  var m = Math.floor(sec / 60);
+  var s = sec % 60;
+  return m + ':' + String(s).padStart(2, '0');
+}
+
+function parseTimeInput() {
+  var h = parseInt(document.getElementById('input-hours').value) || 0;
+  var m = parseInt(document.getElementById('input-minutes').value) || 0;
+  var s = parseInt(document.getElementById('input-seconds').value) || 0;
+  return h * 3600 + m * 60 + s;
+}
+
+// --- 데이터 로드 ---
+
+function loadMeta() {
+  return fetch('data/planner_meta.json')
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      metaData = data;
+      buildDivisionSelect(data.divisions, 'select-division');
+      buildDivisionSelect(data.divisions, 'gap-select-division');
+    });
+}
+
+function loadDivision(slug) {
+  if (divisionCache[slug]) {
+    return Promise.resolve(divisionCache[slug]);
+  }
+  return fetch('data/planner_divisions/' + slug + '.json')
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      divisionCache[slug] = data;
+      return data;
+    });
+}
+
+// --- 디비전 셀렉트 생성 ---
+
+function buildDivisionSelect(divisions, selectId) {
+  var select = document.getElementById(selectId);
+  select.innerHTML = '';
+
+  var groups = {};
+  divisions.forEach(function (div) {
+    if (!groups[div.group]) groups[div.group] = [];
+    groups[div.group].push(div);
+  });
+
+  var groupOrder = ['Single', 'Double', 'Mixed', 'Adaptive'];
+  groupOrder.forEach(function (groupName) {
+    if (!groups[groupName]) return;
+    var optgroup = document.createElement('optgroup');
+    optgroup.label = groupName;
+    groups[groupName].forEach(function (div) {
+      var opt = document.createElement('option');
+      opt.value = div.slug;
+      opt.textContent = div.label + ' (' + div.total_athletes.toLocaleString() + '명)';
+      optgroup.appendChild(opt);
+    });
+    select.appendChild(optgroup);
+  });
+}
+
+// --- bucket 선택 ---
+
+function findBucket(buckets, targetMinutes) {
+  for (var i = 0; i < buckets.length; i++) {
+    if (targetMinutes >= buckets[i].lo_min && targetMinutes < buckets[i].hi_min) {
+      return buckets[i];
+    }
+  }
+  if (targetMinutes < buckets[0].lo_min) {
+    return buckets[0];
+  }
+  return buckets[buckets.length - 1];
+}
+
+// --- 핵심 계산 ---
+
+function calculate() {
+  var slug = document.getElementById('select-division').value;
+  if (!slug) return;
+
+  var targetSeconds = parseTimeInput();
+  if (targetSeconds <= 0) {
+    document.getElementById('results').classList.add('hidden');
+    return;
+  }
+
+  loadDivision(slug).then(function (divData) {
+    var targetMinutes = targetSeconds / 60;
+    var bucket = findBucket(divData.buckets, targetMinutes);
+
+    renderResults({
+      targetSeconds: targetSeconds,
+      targetMinutes: targetMinutes,
+      slug: slug,
+      bucket: bucket,
+      totalAthletes: divData.total_athletes
+    });
+  });
+}
+
+// --- 결과 렌더링 ---
+
+function renderResults(data) {
+  var bucket = data.bucket;
+
+  // 요약
+  document.getElementById('res-target').textContent = formatTime(data.targetSeconds);
+
+  // 백분위 + 순위 (공통 함수 사용)
+  var pctData = calculatePercentile(divisionCache[data.slug].buckets, bucket, data.targetMinutes, data.totalAthletes);
+
+  document.getElementById('res-percentile').textContent = 'Top ' + pctData.percentile.toFixed(1) + '%';
+  document.getElementById('res-rank').textContent = data.totalAthletes.toLocaleString() + '명 중 약 ' + pctData.rank.toLocaleString() + '등';
+  document.getElementById('res-bucket-range').textContent = bucket.lo_min + '~' + bucket.hi_min + '분';
+
+  // 비율 계산 + targetSeconds 스케일링
+  var runRoxRatio = bucket.avg_run_rox / bucket.avg_overall;
+  var targetRunRox = data.targetSeconds * runRoxRatio;
+  var targetStationTotal = data.targetSeconds - targetRunRox;
+
+  // 평균 Run+Roxzone 페이스
+  var avgPace = targetRunRox / TOTAL_DISTANCE;
+  document.getElementById('res-pace').textContent = formatPace(avgPace) + ' /km';
+
+  // Run+Roxzone 실전 분배 (fatigue model)
+  var runBody = document.getElementById('run-table-body');
+  runBody.innerHTML = '';
+  var runRoxUsed = 0;
+
+  for (var i = 0; i < ROUNDS; i++) {
+    var roundTime;
+    if (i < ROUNDS - 1) {
+      roundTime = targetRunRox * (FATIGUE_WEIGHTS[i] / FATIGUE_SUM);
+      runRoxUsed += roundTime;
+    } else {
+      roundTime = targetRunRox - runRoxUsed;
+    }
+    var roundPace = roundTime / DISTANCE_PER_ROUND;
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>Run ' + (i + 1) + ' + Roxzone</td>' +
+      '<td>' + formatTime(roundTime) + '</td>' +
+      '<td>' + formatPace(roundPace) + ' /km</td>';
+    runBody.appendChild(tr);
+  }
+  var runSumTr = document.createElement('tr');
+  runSumTr.className = 'row-sum';
+  runSumTr.innerHTML =
+    '<td>합계</td>' +
+    '<td>' + formatTime(targetRunRox) + '</td>' +
+    '<td>' + formatPace(avgPace) + ' /km</td>';
+  runBody.appendChild(runSumTr);
+
+  // 스테이션 테이블 (targetSeconds 스케일링)
+  var stBody = document.getElementById('station-table-body');
+  stBody.innerHTML = '';
+  var stationUsed = 0;
+
+  STATION_DISPLAY.forEach(function (st, idx) {
+    var bucketTime = bucket.stations[st.key] || 0;
+    var scaledTime;
+    if (idx < STATION_DISPLAY.length - 1) {
+      scaledTime = targetStationTotal * (bucketTime / bucket.avg_station_total);
+      stationUsed += scaledTime;
+    } else {
+      scaledTime = targetStationTotal - stationUsed;
+    }
+
+    var paceCol = '';
+    if (st.key === '1000m SkiErg' || st.key === '1000m Row') {
+      var pace500 = scaledTime / 2;
+      paceCol = '<span class="pace-500">' + formatPace(pace500) + ' /500m</span>';
+    }
+
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + (idx + 1) + '. ' + st.name + ' <span class="spec">' + st.spec + '</span></td>' +
+      '<td>' + formatTime(scaledTime) + ' ' + paceCol + '</td>';
+    stBody.appendChild(tr);
+  });
+
+  var stSumTr = document.createElement('tr');
+  stSumTr.className = 'row-sum';
+  stSumTr.innerHTML =
+    '<td>합계</td>' +
+    '<td>' + formatTime(targetStationTotal) + '</td>';
+  stBody.appendChild(stSumTr);
+
+  // 참고 정보
+  document.getElementById('res-bucket-count').textContent = bucket.count.toLocaleString() + '명';
+  document.getElementById('ref-total-athletes').textContent = data.totalAthletes.toLocaleString() + '명';
+
+  document.getElementById('results').classList.remove('hidden');
+}
+
+// --- 백분위 계산 (공통) ---
+
+function calculatePercentile(buckets, bucket, targetMinutes, totalAthletes) {
+  var cumulativeBefore = 0;
+  for (var i = 0; i < buckets.length; i++) {
+    if (buckets[i] === bucket) break;
+    cumulativeBefore += buckets[i].count;
+  }
+  var bucketPosition = (targetMinutes - bucket.lo_min) / (bucket.hi_min - bucket.lo_min);
+  var rank = Math.round(cumulativeBefore + bucketPosition * bucket.count);
+  var percentile = Math.round((rank / totalAthletes) * 1000) / 10;
+  return { rank: rank, percentile: percentile };
+}
+
+// --- 탭 전환 ---
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab[data-tab]').forEach(function (btn) {
+    btn.classList.toggle('active', btn.dataset.tab === tabName);
+  });
+  document.querySelectorAll('.tab-content').forEach(function (sec) {
+    sec.classList.toggle('hidden', sec.id !== tabName);
+  });
+}
+
+// --- Gap Analysis ---
+
+function parseGapTime(prefix) {
+  var h = parseInt(document.getElementById(prefix + '-hours').value) || 0;
+  var m = parseInt(document.getElementById(prefix + '-minutes').value) || 0;
+  var s = parseInt(document.getElementById(prefix + '-seconds').value) || 0;
+  return h * 3600 + m * 60 + s;
+}
+
+function calculateGap() {
+  var slug = document.getElementById('gap-select-division').value;
+  if (!slug) return;
+
+  var targetSeconds = parseGapTime('gap-target');
+  var currentSeconds = parseGapTime('gap-current');
+  if (targetSeconds <= 0 || currentSeconds <= 0) {
+    document.getElementById('gap-results').classList.add('hidden');
+    return;
+  }
+
+  loadDivision(slug).then(function (divData) {
+    var targetMinutes = targetSeconds / 60;
+    var currentMinutes = currentSeconds / 60;
+    var targetBucket = findBucket(divData.buckets, targetMinutes);
+    var currentBucket = findBucket(divData.buckets, currentMinutes);
+
+    var runRoxRatio = targetBucket.avg_run_rox / targetBucket.avg_overall;
+
+    var targetRunRox = targetSeconds * runRoxRatio;
+    var targetStation = targetSeconds - targetRunRox;
+    var currentRunRox = currentSeconds * runRoxRatio;
+    var currentStation = currentSeconds - currentRunRox;
+
+    var totalGap = currentSeconds - targetSeconds;
+    var runRoxGap = currentRunRox - targetRunRox;
+    var stationGap = currentStation - targetStation;
+
+    var targetPct = calculatePercentile(divData.buckets, targetBucket, targetMinutes, divData.total_athletes);
+    var currentPct = calculatePercentile(divData.buckets, currentBucket, currentMinutes, divData.total_athletes);
+
+    renderGapResults({
+      slug: slug,
+      totalGap: totalGap,
+      runRoxGap: runRoxGap,
+      stationGap: stationGap,
+      targetSeconds: targetSeconds,
+      currentSeconds: currentSeconds,
+      currentPct: currentPct.percentile,
+      targetPct: targetPct.percentile,
+      currentBucket: currentBucket,
+      targetBucket: targetBucket
+    });
+  });
+}
+
+var GAP_PACE_ITEMS = [
+  { key: 'running', label: 'Running', isPace: true, unit: '/km', extra: false },
+  { key: '1000m SkiErg', label: 'SkiErg', div2: true, unit: '/500m', extra: false },
+  { key: '50m Sled Push', label: 'Sled Push', unit: '', extra: false },
+  { key: '1000m Row', label: 'Row', div2: true, unit: '/500m', extra: false },
+  { key: 'Wall Balls', label: 'Wall Balls', unit: '', extra: false },
+  { key: '50m Sled Pull', label: 'Sled Pull', unit: '', extra: true },
+  { key: '80m Burpee Broad Jump', label: 'Burpee Broad Jump', unit: '', extra: true },
+  { key: '200m Farmers Carry', label: 'Farmers Carry', unit: '', extra: true },
+  { key: '100m Sandbag Lunges', label: 'Sandbag Lunges', unit: '', extra: true }
+];
+
+function renderGapResults(data) {
+  var isAhead = data.totalGap <= 0;
+
+  // 총 단축
+  if (isAhead) {
+    document.getElementById('gap-total').textContent = data.totalGap === 0
+      ? '이미 목표 달성'
+      : '목표보다 ' + formatTime(Math.abs(data.totalGap)) + ' 빠름';
+  } else {
+    document.getElementById('gap-total').textContent = formatTime(data.totalGap) + ' 단축 필요';
+  }
+  document.getElementById('gap-current-time').textContent = formatTime(data.currentSeconds);
+  document.getElementById('gap-target-time').textContent = formatTime(data.targetSeconds);
+
+  // 백분위
+  document.getElementById('gap-current-pct').textContent = 'Top ' + data.currentPct.toFixed(1) + '%';
+  document.getElementById('gap-target-pct').textContent = 'Top ' + data.targetPct.toFixed(1) + '%';
+
+  var pctGap = data.currentPct - data.targetPct;
+  var pctDiffEl = document.getElementById('gap-pct-diff');
+  pctDiffEl.textContent = pctGap > 0 ? '상위권 기준 약 ' + pctGap.toFixed(1) + '%p 상승 필요' : '';
+
+  // 시간 배분 가이드
+  if (isAhead) {
+    document.getElementById('gap-run-improve').textContent = '목표 이상';
+    document.getElementById('gap-station-improve').textContent = '목표 이상';
+  } else {
+    document.getElementById('gap-run-improve').textContent = '약 ' + formatTime(data.runRoxGap);
+    document.getElementById('gap-station-improve').textContent = '약 ' + formatTime(data.stationGap);
+  }
+
+  // 세부 페이스 목표 테이블 + 가장 큰 개선 구간 추적
+  var tbody = document.getElementById('gap-pace-body');
+  tbody.innerHTML = '';
+  var biggestRatio = 0;
+  var biggestLabel = '-';
+  var biggestDeltaText = '-';
+  var collectedPaceItems = [];
+
+  GAP_PACE_ITEMS.forEach(function (item) {
+    var curVal, tgtVal, curText, tgtText, deltaText;
+
+    if (item.isPace) {
+      curVal = data.currentBucket.avg_pace_8_7;
+      tgtVal = data.targetBucket.avg_pace_8_7;
+      curText = formatPace(curVal) + ' ' + item.unit;
+      tgtText = formatPace(tgtVal) + ' ' + item.unit;
+      var delta = tgtVal - curVal;
+      deltaText = isAhead ? '목표 이상' : (delta >= 0 ? '목표 이상' : '-' + formatPace(Math.abs(delta)) + ' ' + item.unit);
+      if (!isAhead && delta < 0 && curVal > 0) {
+        var ratio = Math.abs(delta) / curVal;
+        if (ratio > biggestRatio) { biggestRatio = ratio; biggestLabel = item.label; biggestDeltaText = deltaText; }
+      }
+    } else {
+      var rawCur = data.currentBucket.stations[item.key] || 0;
+      var rawTgt = data.targetBucket.stations[item.key] || 0;
+      if (item.div2) {
+        curVal = rawCur / 2;
+        tgtVal = rawTgt / 2;
+        curText = formatPace(curVal) + ' ' + item.unit;
+        tgtText = formatPace(tgtVal) + ' ' + item.unit;
+        var d2 = tgtVal - curVal;
+        deltaText = isAhead ? '목표 이상' : (d2 >= 0 ? '목표 이상' : '-' + formatPace(Math.abs(d2)) + ' ' + item.unit);
+        if (!isAhead && d2 < 0 && curVal > 0) {
+          var r2 = Math.abs(d2) / curVal;
+          if (r2 > biggestRatio) { biggestRatio = r2; biggestLabel = item.label; biggestDeltaText = deltaText; }
+        }
+      } else {
+        curVal = rawCur;
+        tgtVal = rawTgt;
+        curText = formatTime(curVal);
+        tgtText = formatTime(tgtVal);
+        var d3 = tgtVal - curVal;
+        deltaText = isAhead ? '목표 이상' : (d3 >= 0 ? '목표 이상' : '-' + formatTime(Math.abs(d3)));
+        if (!isAhead && d3 < 0 && curVal > 0) {
+          var r3 = Math.abs(d3) / curVal;
+          if (r3 > biggestRatio) { biggestRatio = r3; biggestLabel = item.label; biggestDeltaText = deltaText; }
+        }
+      }
+    }
+
+    collectedPaceItems.push({
+      key: item.key || 'running',
+      label: item.label,
+      curText: curText,
+      tgtText: tgtText,
+      curVal: curVal,
+      tgtVal: tgtVal,
+      delta: tgtVal - curVal,
+      deltaRatio: (curVal > 0 && (tgtVal - curVal) < 0) ? Math.abs(tgtVal - curVal) / curVal : 0
+    });
+
+    var tr = document.createElement('tr');
+    if (item.extra) tr.className = 'pace-row-extra hidden';
+    var deltaClass = deltaText === '목표 이상' ? '' : 'pace-delta';
+    tr.innerHTML =
+      '<td>' + item.label + '</td>' +
+      '<td>' + curText + '</td>' +
+      '<td>→</td>' +
+      '<td>' + tgtText + '</td>' +
+      '<td class="' + deltaClass + '">' + deltaText + '</td>';
+    tbody.appendChild(tr);
+  });
+
+  // 더 보기 버튼 초기화
+  var moreBtn = document.getElementById('btn-gap-more');
+  moreBtn.textContent = '▼ 더 보기';
+  moreBtn.classList.remove('hidden');
+
+  // 종합 요약
+  if (isAhead) {
+    document.getElementById('gap-ov-total').textContent = '이미 목표 달성';
+    document.getElementById('gap-ov-rate').textContent = '목표보다 빠름';
+    document.getElementById('gap-ov-biggest').textContent = '-';
+  } else {
+    document.getElementById('gap-ov-total').textContent = formatTime(data.totalGap);
+    var paceImprove = Math.round(data.totalGap / data.currentSeconds * 1000) / 10;
+    document.getElementById('gap-ov-rate').textContent = paceImprove.toFixed(1) + '%';
+    document.getElementById('gap-ov-biggest').innerHTML = biggestLabel + '<br>' + biggestDeltaText;
+  }
+  document.getElementById('gap-ov-pct').textContent = 'Top ' + data.currentPct.toFixed(1) + '% → Top ' + data.targetPct.toFixed(1) + '%';
+
+  document.getElementById('gap-results').classList.remove('hidden');
+
+  // 로드맵 데이터 수집
+  var divLabel = '';
+  if (metaData) {
+    for (var i = 0; i < metaData.divisions.length; i++) {
+      if (metaData.divisions[i].slug === data.slug) {
+        divLabel = metaData.divisions[i].label;
+        break;
+      }
+    }
+  }
+  roadmapData = {
+    divisionSlug: data.slug,
+    divisionLabel: divLabel,
+    currentSeconds: data.currentSeconds,
+    targetSeconds: data.targetSeconds,
+    totalGap: data.totalGap,
+    isAhead: isAhead,
+    paceItems: collectedPaceItems
+  };
+  document.getElementById('btn-go-roadmap').classList.remove('hidden');
+}
+
+function toggleGapMore() {
+  var rows = document.querySelectorAll('.pace-row-extra');
+  var btn = document.getElementById('btn-gap-more');
+  var isHidden = rows[0] && rows[0].classList.contains('hidden');
+  rows.forEach(function (r) { r.classList.toggle('hidden'); });
+  btn.textContent = isHidden ? '▲ 접기' : '▼ 더 보기';
+}
+
+// --- 목표 로드맵 ---
+
+var IMPACT_WEIGHTS = {
+  'running':              1.00,
+  '1000m SkiErg':         0.55,
+  '50m Sled Push':        0.75,
+  '50m Sled Pull':        0.75,
+  '80m Burpee Broad Jump':0.65,
+  '1000m Row':            0.55,
+  '200m Farmers Carry':   0.45,
+  '100m Sandbag Lunges':  0.65,
+  'Wall Balls':           0.70
+};
+
+var TRAINING_STRUCTURES = {
+  3: [
+    { day: 'Day 1', type: '러닝 인터벌', desc: '목표 페이스 적응' },
+    { day: 'Day 2', type: '근지구력',     desc: '약점 스테이션 반복' },
+    { day: 'Day 3', type: 'HYROX 혼합',  desc: 'Run + Station 연결' }
+  ],
+  4: [
+    { day: 'Day 1', type: '러닝 인터벌', desc: '목표 페이스 적응' },
+    { day: 'Day 2', type: '근지구력',     desc: '약점 스테이션 반복' },
+    { day: 'Day 3', type: 'HYROX 혼합',  desc: 'Run + Station 연결' },
+    { day: 'Day 4', type: '롱런',        desc: '유산소 기반 강화' }
+  ],
+  5: [
+    { day: 'Day 1', type: '러닝 인터벌', desc: '목표 페이스 적응' },
+    { day: 'Day 2', type: '근지구력 A',  desc: '1순위 약점 스테이션 집중' },
+    { day: 'Day 3', type: 'HYROX 혼합',  desc: 'Run + Station 연결' },
+    { day: 'Day 4', type: '근지구력 B',  desc: '2~3순위 약점 스테이션' },
+    { day: 'Day 5', type: '롱런',        desc: '유산소 기반 강화' }
+  ]
+};
+
+var PERIOD_PLANS = {
+  4: [
+    { weeks: '1주',    name: '기초 테스트', desc: '현재 수준 확인, 기본 볼륨 확보' },
+    { weeks: '2~3주',  name: '약점 집중',   desc: '' },
+    { weeks: '4주',    name: '테이퍼링',    desc: '볼륨 감소, 레이스 페이스 확인' }
+  ],
+  8: [
+    { weeks: '1~2주',  name: '기초 구축',           desc: '에어로빅 베이스, 동작 숙련' },
+    { weeks: '3~5주',  name: '약점 강화',           desc: '' },
+    { weeks: '6~7주',  name: '레이스 페이스 적응',   desc: '목표 페이스 통합 훈련' },
+    { weeks: '8주',    name: '테이퍼링',             desc: '볼륨 40% 감소, 회복 우선' }
+  ],
+  12: [
+    { weeks: '1~3주',  name: '기초 구축',           desc: '에어로빅 베이스, 근력 기반' },
+    { weeks: '4~7주',  name: '약점 강화',           desc: '' },
+    { weeks: '8~10주', name: '레이스 페이스 적응',   desc: '목표 페이스 통합 훈련' },
+    { weeks: '11주',   name: '피크',                desc: '높은 강도, 짧은 볼륨' },
+    { weeks: '12주',   name: '테이퍼링',             desc: '볼륨 50% 감소' }
+  ]
+};
+
+function getDifficulty(totalGapSeconds, isAhead) {
+  if (isAhead) return { label: '유지/보완', level: 0 };
+  var gapMin = totalGapSeconds / 60;
+  if (gapMin <= 3)  return { label: '쉬움',      level: 1 };
+  if (gapMin <= 7)  return { label: '보통',      level: 2 };
+  if (gapMin <= 12) return { label: '어려움',    level: 3 };
+  return               { label: '매우 어려움', level: 4 };
+}
+
+function getTopWeaknesses(paceItems) {
+  var candidates = [];
+  paceItems.forEach(function (item) {
+    if (item.delta >= 0 || item.curVal <= 0) return;
+    var dr = item.deltaRatio;
+    var weight = IMPACT_WEIGHTS[item.key] || 0.5;
+    candidates.push({
+      label: item.label,
+      curText: item.curText,
+      tgtText: item.tgtText,
+      deltaRatio: dr,
+      impactWeight: weight
+    });
+  });
+  if (candidates.length === 0) return [];
+
+  // 총단축기여도 정규화
+  var sumContrib = 0;
+  candidates.forEach(function (c) { sumContrib += c.deltaRatio * c.impactWeight; });
+  candidates.forEach(function (c) {
+    var contrib = sumContrib > 0 ? (c.deltaRatio * c.impactWeight) / sumContrib : 0;
+    c.score = c.deltaRatio * 0.7 + contrib * 0.3;
+  });
+  candidates.sort(function (a, b) { return b.score - a.score; });
+  return candidates.slice(0, 3);
+}
+
+function renderRoadmap() {
+  if (!roadmapData) {
+    document.getElementById('roadmap-empty').classList.remove('hidden');
+    document.getElementById('roadmap-content').classList.add('hidden');
+    return;
+  }
+  document.getElementById('roadmap-empty').classList.add('hidden');
+  document.getElementById('roadmap-content').classList.remove('hidden');
+
+  var period = parseInt(document.querySelector('#rm-period-group .rm-toggle.active').dataset.value);
+  var freq = parseInt(document.querySelector('#rm-freq-group .rm-toggle.active').dataset.value);
+
+  // 카드 1: 목표 요약
+  document.getElementById('rm-current').textContent = formatTime(roadmapData.currentSeconds);
+  document.getElementById('rm-target').textContent = formatTime(roadmapData.targetSeconds);
+
+  if (roadmapData.isAhead) {
+    document.getElementById('rm-gap-text').textContent =
+      roadmapData.totalGap === 0 ? '이미 목표 달성' : '목표보다 ' + formatTime(Math.abs(roadmapData.totalGap)) + ' 빠름';
+  } else {
+    document.getElementById('rm-gap-text').textContent = formatTime(roadmapData.totalGap) + ' 단축 필요';
+  }
+
+  document.getElementById('rm-division').textContent = roadmapData.divisionLabel;
+
+  var diff = getDifficulty(roadmapData.totalGap, roadmapData.isAhead);
+  var diffEl = document.getElementById('rm-difficulty');
+  diffEl.textContent = diff.label;
+  diffEl.className = 'rm-difficulty-' + diff.level;
+
+  // 카드 2: 우선 개선 항목
+  var weaknesses = getTopWeaknesses(roadmapData.paceItems);
+  var wList = document.getElementById('rm-weakness-list');
+  wList.innerHTML = '';
+
+  if (weaknesses.length === 0) {
+    wList.innerHTML = '<div class="rm-balanced-msg">전체적으로 균형 잡힌 수준입니다.</div>';
+  } else {
+    weaknesses.forEach(function (w, idx) {
+      var div = document.createElement('div');
+      div.className = 'rm-weakness-item';
+      div.innerHTML =
+        '<span class="rm-weakness-rank">' + (idx + 1) + '</span>' +
+        '<div class="rm-weakness-info">' +
+          '<div class="rm-weakness-name">' + w.label + '</div>' +
+          '<div class="rm-weakness-detail">현재 ' + w.curText + ' → 목표 ' + w.tgtText + '</div>' +
+        '</div>';
+      wList.appendChild(div);
+    });
+  }
+
+  // 약점 이름 목록 (기간별 진행 방향에서 사용)
+  var weaknessNames = weaknesses.map(function (w) { return w.label; });
+  var weaknessText = weaknessNames.length > 0 ? weaknessNames.slice(0, 2).join(', ') + ' 집중' : '전체 균형 훈련';
+
+  // 카드 3: 추천 훈련 구조
+  document.getElementById('rm-structure-title').textContent = '추천 훈련 구조 (주 ' + freq + '회)';
+  var sList = document.getElementById('rm-structure-list');
+  sList.innerHTML = '';
+  var structure = TRAINING_STRUCTURES[freq];
+  structure.forEach(function (s) {
+    var div = document.createElement('div');
+    div.className = 'rm-day-item';
+    div.innerHTML =
+      '<span class="rm-day-label">' + s.day + '</span>' +
+      '<div class="rm-day-info">' +
+        '<div class="rm-day-type">' + s.type + '</div>' +
+      '</div>';
+    sList.appendChild(div);
+  });
+
+  // 카드 4: 기간별 진행 방향
+  document.getElementById('rm-phase-title').textContent = period + '주 로드맵';
+  var pList = document.getElementById('rm-phase-list');
+  pList.innerHTML = '';
+  var phases = PERIOD_PLANS[period];
+  phases.forEach(function (p) {
+    var desc = p.desc;
+    if (!desc && p.name.indexOf('약점') !== -1) {
+      desc = weaknessText + ', 점진적 강도 증가';
+    }
+    var div = document.createElement('div');
+    div.className = 'rm-phase-item';
+    div.innerHTML =
+      '<div class="rm-phase-header">' +
+        '<span class="rm-phase-weeks">' + p.weeks + '</span>' +
+        '<span class="rm-phase-name">' + p.name + '</span>' +
+      '</div>' +
+      '<div class="rm-phase-desc">' + desc + '</div>';
+    pList.appendChild(div);
+  });
+
+  // 카드 5: 이번 주 훈련 방향
+  var w1List = document.getElementById('rm-week1-list');
+  w1List.innerHTML = '';
+  var topWeakness = weaknessNames.length > 0 ? weaknessNames[0] : '';
+
+  structure.forEach(function (s) {
+    var desc = s.desc;
+    // 약점 이름을 동적 삽입
+    if (topWeakness) {
+      if (desc.indexOf('약점 스테이션') !== -1) {
+        desc = desc.replace('약점 스테이션', '약점 스테이션(' + topWeakness + ')');
+      }
+      if (desc.indexOf('1순위 약점') !== -1) {
+        desc = desc.replace('1순위 약점 스테이션', weaknessNames[0] + ' 스테이션');
+      }
+      if (desc.indexOf('2~3순위 약점') !== -1) {
+        var sub = weaknessNames.slice(1).join(', ');
+        desc = desc.replace('2~3순위 약점 스테이션', sub ? sub + ' 스테이션' : '보조 스테이션');
+      }
+    }
+
+    var div = document.createElement('div');
+    div.className = 'rm-day-item';
+    div.innerHTML =
+      '<span class="rm-day-label">' + s.day + '</span>' +
+      '<div class="rm-day-info">' +
+        '<div class="rm-day-type">' + s.type + '</div>' +
+        '<div class="rm-day-desc">' + desc + '</div>' +
+      '</div>';
+    w1List.appendChild(div);
+  });
+
+  // CTA
+  var ctaEl = document.getElementById('rm-cta');
+  var descLines = CTA_DESCRIPTION.split('\n');
+  var descHtml = descLines.map(function (line) { return '<p>' + line + '</p>'; }).join('');
+  ctaEl.innerHTML =
+    '<div class="rm-cta-desc">' + descHtml + '</div>' +
+    '<a class="rm-cta-btn" href="' + KAKAO_CHANNEL_URL + '" target="_blank" rel="noopener noreferrer">' + CTA_TEXT + '</a>';
+}
+
+function initRoadmapToggles() {
+  ['rm-period-group', 'rm-freq-group'].forEach(function (groupId) {
+    var group = document.getElementById(groupId);
+    group.querySelectorAll('.rm-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        group.querySelectorAll('.rm-toggle').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        renderRoadmap();
+      });
+    });
+  });
+}
+
+// --- 초기화 ---
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Footer
+  var footerEl = document.getElementById('footer-credit');
+  footerEl.textContent = FOOTER_TEXT;
+
+  // 시간 입력 2자리 표시 (분/초)
+  document.querySelectorAll('.time-input').forEach(function (input) {
+    if (input.id.indexOf('hours') === -1) {
+      input.value = String(parseInt(input.value) || 0).padStart(2, '0');
+      input.addEventListener('blur', function () {
+        input.value = String(parseInt(input.value) || 0).padStart(2, '0');
+      });
+    }
+  });
+
+  // 탭 전환
+  document.querySelectorAll('.tab[data-tab]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      switchTab(btn.dataset.tab);
+    });
+  });
+
+  loadMeta().then(function () {
+    // Pace Planner 이벤트
+    document.getElementById('select-division').addEventListener('change', function () {
+      if (!document.getElementById('results').classList.contains('hidden')) {
+        calculate();
+      }
+    });
+
+    document.getElementById('btn-calculate').addEventListener('click', calculate);
+
+    document.querySelectorAll('#tab-planner .time-input').forEach(function (input) {
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') calculate();
+      });
+    });
+
+    // Gap Analysis 이벤트
+    document.getElementById('btn-gap-analyze').addEventListener('click', calculateGap);
+    document.getElementById('btn-gap-more').addEventListener('click', toggleGapMore);
+
+    document.querySelectorAll('#tab-gap .time-input').forEach(function (input) {
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') calculateGap();
+      });
+    });
+
+    // 로드맵 이벤트
+    document.getElementById('btn-go-roadmap').addEventListener('click', function () {
+      switchTab('tab-roadmap');
+      renderRoadmap();
+    });
+
+    document.getElementById('btn-goto-gap').addEventListener('click', function () {
+      switchTab('tab-gap');
+    });
+
+    initRoadmapToggles();
+
+    // 로드맵 탭 직접 진입 시 상태 체크
+    document.querySelectorAll('.tab[data-tab]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.dataset.tab === 'tab-roadmap') {
+          renderRoadmap();
+        }
+      });
+    });
+  });
+});

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HYROX Coach Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 헤더 -->
+  <header class="header">
+    <h1>HYROX Coach Lab</h1>
+  </header>
+
+  <!-- 탭 네비게이션 -->
+  <nav class="tab-nav">
+    <button class="tab active" data-tab="tab-planner">페이스 플래너</button>
+    <button class="tab" data-tab="tab-gap">목표 달성 분석</button>
+    <button class="tab" data-tab="tab-roadmap">목표 로드맵</button>
+  </nav>
+
+  <main class="container">
+
+  <!-- ========== 탭: 페이스 플래너 ========== -->
+  <div id="tab-planner" class="tab-content">
+
+    <!-- 입력 섹션 -->
+    <section class="card">
+      <h2 class="card-title">입력</h2>
+
+      <!-- 디비전 -->
+      <div class="form-group">
+        <label for="select-division">디비전</label>
+        <select id="select-division"></select>
+      </div>
+
+      <!-- 목표 완주 시간 -->
+      <div class="form-group">
+        <label>목표 완주 시간</label>
+        <div class="time-inputs">
+          <div class="time-field">
+            <input type="number" id="input-hours" class="time-input" min="0" max="9" value="1" placeholder="H">
+            <span class="time-label">시</span>
+          </div>
+          <span class="time-sep">:</span>
+          <div class="time-field">
+            <input type="number" id="input-minutes" class="time-input" min="0" max="59" value="15" placeholder="MM">
+            <span class="time-label">분</span>
+          </div>
+          <span class="time-sep">:</span>
+          <div class="time-field">
+            <input type="number" id="input-seconds" class="time-input" min="0" max="59" value="0" placeholder="SS">
+            <span class="time-label">초</span>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-calculate" class="btn-primary">계산하기</button>
+    </section>
+
+    <!-- 결과 섹션 -->
+    <section id="results" class="hidden">
+
+      <!-- 요약 -->
+      <div class="card summary-card">
+        <h2 class="card-title">요약</h2>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-label">목표 기록</span>
+            <span class="summary-value" id="res-target">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">평균 Run+Roxzone 페이스</span>
+            <span class="summary-value" id="res-pace">-</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">백분위</span>
+            <span class="summary-value" id="res-percentile">-</span>
+            <span class="summary-sub" id="res-rank">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 러닝 구간 -->
+      <div class="card">
+        <h2 class="card-title">러닝 구간</h2>
+        <p class="section-desc">각 라운드는 Run + Roxzone을 포함한 1.0875km 기준입니다. 후반부 피로도를 반영한 실전 분배 모델이 적용됩니다.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>구간</th>
+                <th>목표 시간</th>
+                <th>페이스</th>
+              </tr>
+            </thead>
+            <tbody id="run-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 운동 스테이션 -->
+      <div class="card">
+        <h2 class="card-title">운동 스테이션</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>스테이션</th>
+                <th>목표 시간</th>
+              </tr>
+            </thead>
+            <tbody id="station-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 참고 -->
+      <div class="card ref-card">
+        <h2 class="card-title">참고</h2>
+        <div class="ref-grid">
+          <span>구간 범위</span><span id="res-bucket-range">-</span>
+          <span>해당 구간 선수 수</span><span id="res-bucket-count">-</span>
+          <span>데이터 기준</span><span id="ref-total-athletes">-</span>
+          <span>순위 정확도</span><span>bucket 통계 기반 추정값</span>
+        </div>
+      </div>
+
+      <!-- 안내 -->
+      <p class="notice">이 결과는 HYROX 공개 완주 기록 통계를 기반으로 산출된 참고 데이터입니다.</p>
+
+    </section>
+
+  </div><!-- /tab-planner -->
+
+  <!-- ========== 탭: Gap Analysis ========== -->
+  <div id="tab-gap" class="tab-content hidden">
+
+    <!-- 입력 -->
+    <section class="card">
+      <h2 class="card-title">목표 달성 분석</h2>
+      <div class="gap-input-row">
+        <div class="form-group">
+          <label for="gap-select-division">디비전</label>
+          <select id="gap-select-division"></select>
+        </div>
+        <div class="form-group">
+          <label>현재 기록</label>
+          <div class="time-inputs">
+            <div class="time-field">
+              <input type="number" id="gap-current-hours" class="time-input" min="0" max="9" value="1">
+              <span class="time-label">시</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="time-field">
+              <input type="number" id="gap-current-minutes" class="time-input" min="0" max="59" value="16">
+              <span class="time-label">분</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="time-field">
+              <input type="number" id="gap-current-seconds" class="time-input" min="0" max="59" value="0">
+              <span class="time-label">초</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>목표 기록</label>
+          <div class="time-inputs">
+            <div class="time-field">
+              <input type="number" id="gap-target-hours" class="time-input" min="0" max="9" value="1">
+              <span class="time-label">시</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="time-field">
+              <input type="number" id="gap-target-minutes" class="time-input" min="0" max="59" value="10">
+              <span class="time-label">분</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="time-field">
+              <input type="number" id="gap-target-seconds" class="time-input" min="0" max="59" value="0">
+              <span class="time-label">초</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group gap-btn-group">
+          <label>&nbsp;</label>
+          <button id="btn-gap-analyze" class="btn-primary">분석하기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 결과 -->
+    <section id="gap-results" class="hidden">
+
+      <!-- A. 상단 요약 -->
+      <div class="card">
+        <div class="gap-summary-split">
+          <div class="gap-summary-left">
+            <h2 class="card-title">총 단축 필요 시간</h2>
+            <div class="gap-summary" id="gap-total">-</div>
+            <div class="gap-compare">
+              <span>현재 <strong id="gap-current-time">-</strong></span>
+              <span>→</span>
+              <span>목표 <strong id="gap-target-time">-</strong></span>
+            </div>
+          </div>
+          <div class="gap-summary-right">
+            <h2 class="card-title">백분위 변화</h2>
+            <div class="gap-compare">
+              <span>현재 <strong id="gap-current-pct">-</strong></span>
+              <span>→</span>
+              <span>목표 <strong id="gap-target-pct">-</strong></span>
+            </div>
+            <div class="gap-pct-diff" id="gap-pct-diff"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B. 중단 2열 -->
+      <div class="gap-two-col">
+        <!-- 세부 페이스 목표 -->
+        <div class="card">
+          <h2 class="card-title">세부 페이스 목표</h2>
+          <p class="section-desc">목표 달성을 위해 필요한 수준</p>
+          <div class="table-wrap">
+            <table class="pace-table">
+              <thead>
+                <tr>
+                  <th>구간</th>
+                  <th>현재 수준</th>
+                  <th></th>
+                  <th>목표 수준</th>
+                  <th>개선 필요</th>
+                </tr>
+              </thead>
+              <tbody id="gap-pace-body"></tbody>
+            </table>
+          </div>
+          <button id="btn-gap-more" class="btn-gap-more hidden">▼ 더 보기</button>
+        </div>
+
+        <!-- 시간 배분 가이드 -->
+        <div class="card">
+          <h2 class="card-title">시간 배분 가이드</h2>
+          <div class="gap-improve-item">
+            <span class="gap-improve-label">Run + Roxzone</span>
+            <span class="gap-improve-value" id="gap-run-improve">-</span>
+          </div>
+          <div class="gap-improve-item">
+            <span class="gap-improve-label">Station</span>
+            <span class="gap-improve-value" id="gap-station-improve">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C. 종합 요약 -->
+      <div class="card">
+        <h2 class="card-title">종합 요약</h2>
+        <div class="gap-overview-grid">
+          <div class="gap-overview-item">
+            <span class="gap-ov-label">총 단축 필요</span>
+            <span class="gap-ov-value gap-ov-primary" id="gap-ov-total">-</span>
+          </div>
+          <div class="gap-overview-item">
+            <span class="gap-ov-label">백분위 변화</span>
+            <span class="gap-ov-value" id="gap-ov-pct">-</span>
+          </div>
+          <div class="gap-overview-item">
+            <span class="gap-ov-label">전체 기록 개선률</span>
+            <span class="gap-ov-value gap-ov-primary" id="gap-ov-rate">-</span>
+          </div>
+          <div class="gap-overview-item">
+            <span class="gap-ov-label">가장 큰 개선 구간</span>
+            <span class="gap-ov-value gap-ov-primary" id="gap-ov-biggest">-</span>
+          </div>
+        </div>
+        <p class="section-desc" style="margin-top:12px;margin-bottom:0">현재 기록 대비 목표 기록까지 필요한 전체 개선 폭입니다.</p>
+      </div>
+
+      <button id="btn-go-roadmap" class="btn-primary hidden" style="margin-top:16px">이 목표로 로드맵 만들기 →</button>
+
+    </section>
+
+  </div><!-- /tab-gap -->
+
+  <!-- ========== 탭: 목표 로드맵 ========== -->
+  <div id="tab-roadmap" class="tab-content hidden">
+
+    <!-- 데이터 없을 때 -->
+    <div id="roadmap-empty" class="card roadmap-empty-card">
+      <p>목표 달성 분석을 먼저 실행해주세요.</p>
+      <button id="btn-goto-gap" class="btn-primary" style="margin-top:12px;max-width:280px">목표 달성 분석으로 이동</button>
+    </div>
+
+    <!-- 데이터 있을 때 -->
+    <div id="roadmap-content" class="hidden">
+
+      <!-- 입력: 준비 기간 / 주당 횟수 -->
+      <section class="card">
+        <h2 class="card-title">설정</h2>
+        <div class="rm-option-row">
+          <div class="rm-option-group">
+            <label class="rm-option-label">준비 기간</label>
+            <div class="rm-toggle-group" id="rm-period-group">
+              <button class="rm-toggle" data-value="4">4주</button>
+              <button class="rm-toggle active" data-value="8">8주</button>
+              <button class="rm-toggle" data-value="12">12주</button>
+            </div>
+          </div>
+          <div class="rm-option-group">
+            <label class="rm-option-label">주당 훈련 횟수</label>
+            <div class="rm-toggle-group" id="rm-freq-group">
+              <button class="rm-toggle" data-value="3">3회</button>
+              <button class="rm-toggle active" data-value="4">4회</button>
+              <button class="rm-toggle" data-value="5">5회</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 카드 1: 목표 요약 -->
+      <div class="card">
+        <h2 class="card-title">목표 요약</h2>
+        <div class="rm-summary-row">
+          <span id="rm-current">-</span>
+          <span class="rm-arrow">→</span>
+          <span id="rm-target">-</span>
+        </div>
+        <div class="rm-summary-sub" id="rm-gap-text">-</div>
+        <div class="rm-summary-meta">
+          <span id="rm-division">-</span>
+          <span>난이도: <strong id="rm-difficulty">-</strong></span>
+        </div>
+      </div>
+
+      <!-- 카드 2: 우선 개선 항목 -->
+      <div class="card">
+        <h2 class="card-title">우선 개선 항목</h2>
+        <div id="rm-weakness-list"></div>
+      </div>
+
+      <!-- 카드 3: 추천 훈련 구조 -->
+      <div class="card">
+        <h2 class="card-title" id="rm-structure-title">추천 훈련 구조</h2>
+        <div id="rm-structure-list"></div>
+      </div>
+
+      <!-- 카드 4: 기간별 진행 방향 -->
+      <div class="card">
+        <h2 class="card-title" id="rm-phase-title">기간별 진행 방향</h2>
+        <div id="rm-phase-list"></div>
+      </div>
+
+      <!-- 카드 5: 이번 주 훈련 방향 -->
+      <div class="card">
+        <h2 class="card-title">이번 주 훈련 방향</h2>
+        <div id="rm-week1-list"></div>
+      </div>
+
+      <!-- CTA -->
+      <div id="rm-cta" class="rm-cta-card"></div>
+
+      <p class="notice">이 로드맵은 훈련 방향을 제시하는 참고 자료입니다. 개인 상태에 따라 조정하세요.</p>
+
+    </div><!-- /roadmap-content -->
+
+  </div><!-- /tab-roadmap -->
+
+  </main>
+
+  <footer class="site-footer">
+    <span id="footer-credit" class="footer-credit"></span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

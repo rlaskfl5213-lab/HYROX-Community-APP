@@ -1,0 +1,879 @@
+{
+  "total_athletes": 264291,
+  "buckets": [
+    {
+      "lo_min": 50,
+      "hi_min": 55,
+      "count": 63,
+      "pct_range": [
+        0.0,
+        0.0
+      ],
+      "avg_overall": 3244,
+      "avg_run_rox": 1905,
+      "avg_pace_8_7": 219,
+      "avg_station_total": 1350,
+      "stations": {
+        "1000m SkiErg": 231,
+        "50m Sled Push": 111,
+        "50m Sled Pull": 159,
+        "80m Burpee Broad Jump": 156,
+        "1000m Row": 240,
+        "200m Farmers Carry": 85,
+        "100m Sandbag Lunges": 155,
+        "Wall Balls": 213
+      }
+    },
+    {
+      "lo_min": 55,
+      "hi_min": 60,
+      "count": 1381,
+      "pct_range": [
+        0.0,
+        0.5
+      ],
+      "avg_overall": 3513,
+      "avg_run_rox": 2020,
+      "avg_pace_8_7": 232,
+      "avg_station_total": 1505,
+      "stations": {
+        "1000m SkiErg": 243,
+        "50m Sled Push": 129,
+        "50m Sled Pull": 187,
+        "80m Burpee Broad Jump": 182,
+        "1000m Row": 251,
+        "200m Farmers Carry": 91,
+        "100m Sandbag Lunges": 186,
+        "Wall Balls": 236
+      }
+    },
+    {
+      "lo_min": 60,
+      "hi_min": 65,
+      "count": 6829,
+      "pct_range": [
+        0.5,
+        3.1
+      ],
+      "avg_overall": 3780,
+      "avg_run_rox": 2157,
+      "avg_pace_8_7": 248,
+      "avg_station_total": 1637,
+      "stations": {
+        "1000m SkiErg": 248,
+        "50m Sled Push": 139,
+        "50m Sled Pull": 206,
+        "80m Burpee Broad Jump": 206,
+        "1000m Row": 259,
+        "200m Farmers Carry": 101,
+        "100m Sandbag Lunges": 210,
+        "Wall Balls": 268
+      }
+    },
+    {
+      "lo_min": 65,
+      "hi_min": 70,
+      "count": 16522,
+      "pct_range": [
+        3.1,
+        9.4
+      ],
+      "avg_overall": 4069,
+      "avg_run_rox": 2317,
+      "avg_pace_8_7": 266,
+      "avg_station_total": 1879,
+      "stations": {
+        "1000m SkiErg": 253,
+        "50m Sled Push": 205,
+        "50m Sled Pull": 285,
+        "80m Burpee Broad Jump": 233,
+        "1000m Row": 266,
+        "200m Farmers Carry": 105,
+        "100m Sandbag Lunges": 234,
+        "Wall Balls": 298
+      }
+    },
+    {
+      "lo_min": 70,
+      "hi_min": 75,
+      "count": 26107,
+      "pct_range": [
+        9.4,
+        19.3
+      ],
+      "avg_overall": 4361,
+      "avg_run_rox": 2479,
+      "avg_pace_8_7": 285,
+      "avg_station_total": 1890,
+      "stations": {
+        "1000m SkiErg": 259,
+        "50m Sled Push": 156,
+        "50m Sled Pull": 245,
+        "80m Burpee Broad Jump": 260,
+        "1000m Row": 273,
+        "200m Farmers Carry": 113,
+        "100m Sandbag Lunges": 256,
+        "Wall Balls": 328
+      }
+    },
+    {
+      "lo_min": 75,
+      "hi_min": 80,
+      "count": 32947,
+      "pct_range": [
+        19.3,
+        31.7
+      ],
+      "avg_overall": 4655,
+      "avg_run_rox": 2644,
+      "avg_pace_8_7": 304,
+      "avg_station_total": 2017,
+      "stations": {
+        "1000m SkiErg": 264,
+        "50m Sled Push": 166,
+        "50m Sled Pull": 264,
+        "80m Burpee Broad Jump": 286,
+        "1000m Row": 280,
+        "200m Farmers Carry": 120,
+        "100m Sandbag Lunges": 278,
+        "Wall Balls": 359
+      }
+    },
+    {
+      "lo_min": 80,
+      "hi_min": 85,
+      "count": 34023,
+      "pct_range": [
+        31.7,
+        44.6
+      ],
+      "avg_overall": 4951,
+      "avg_run_rox": 2808,
+      "avg_pace_8_7": 323,
+      "avg_station_total": 2148,
+      "stations": {
+        "1000m SkiErg": 268,
+        "50m Sled Push": 174,
+        "50m Sled Pull": 284,
+        "80m Burpee Broad Jump": 313,
+        "1000m Row": 287,
+        "200m Farmers Carry": 128,
+        "100m Sandbag Lunges": 300,
+        "Wall Balls": 394
+      }
+    },
+    {
+      "lo_min": 85,
+      "hi_min": 90,
+      "count": 32602,
+      "pct_range": [
+        44.6,
+        56.9
+      ],
+      "avg_overall": 5248,
+      "avg_run_rox": 2976,
+      "avg_pace_8_7": 342,
+      "avg_station_total": 2280,
+      "stations": {
+        "1000m SkiErg": 273,
+        "50m Sled Push": 184,
+        "50m Sled Pull": 304,
+        "80m Burpee Broad Jump": 340,
+        "1000m Row": 294,
+        "200m Farmers Carry": 135,
+        "100m Sandbag Lunges": 323,
+        "Wall Balls": 427
+      }
+    },
+    {
+      "lo_min": 90,
+      "hi_min": 95,
+      "count": 26777,
+      "pct_range": [
+        56.9,
+        67.1
+      ],
+      "avg_overall": 5546,
+      "avg_run_rox": 3139,
+      "avg_pace_8_7": 361,
+      "avg_station_total": 2413,
+      "stations": {
+        "1000m SkiErg": 277,
+        "50m Sled Push": 193,
+        "50m Sled Pull": 324,
+        "80m Burpee Broad Jump": 367,
+        "1000m Row": 300,
+        "200m Farmers Carry": 142,
+        "100m Sandbag Lunges": 346,
+        "Wall Balls": 464
+      }
+    },
+    {
+      "lo_min": 95,
+      "hi_min": 100,
+      "count": 21691,
+      "pct_range": [
+        67.1,
+        75.3
+      ],
+      "avg_overall": 5845,
+      "avg_run_rox": 3304,
+      "avg_pace_8_7": 380,
+      "avg_station_total": 2550,
+      "stations": {
+        "1000m SkiErg": 282,
+        "50m Sled Push": 204,
+        "50m Sled Pull": 342,
+        "80m Burpee Broad Jump": 393,
+        "1000m Row": 307,
+        "200m Farmers Carry": 149,
+        "100m Sandbag Lunges": 372,
+        "Wall Balls": 501
+      }
+    },
+    {
+      "lo_min": 100,
+      "hi_min": 105,
+      "count": 16450,
+      "pct_range": [
+        75.3,
+        81.5
+      ],
+      "avg_overall": 6144,
+      "avg_run_rox": 3479,
+      "avg_pace_8_7": 400,
+      "avg_station_total": 2674,
+      "stations": {
+        "1000m SkiErg": 286,
+        "50m Sled Push": 214,
+        "50m Sled Pull": 362,
+        "80m Burpee Broad Jump": 417,
+        "1000m Row": 314,
+        "200m Farmers Carry": 156,
+        "100m Sandbag Lunges": 389,
+        "Wall Balls": 536
+      }
+    },
+    {
+      "lo_min": 105,
+      "hi_min": 110,
+      "count": 12663,
+      "pct_range": [
+        81.5,
+        86.3
+      ],
+      "avg_overall": 6442,
+      "avg_run_rox": 3640,
+      "avg_pace_8_7": 418,
+      "avg_station_total": 2808,
+      "stations": {
+        "1000m SkiErg": 290,
+        "50m Sled Push": 225,
+        "50m Sled Pull": 381,
+        "80m Burpee Broad Jump": 443,
+        "1000m Row": 319,
+        "200m Farmers Carry": 162,
+        "100m Sandbag Lunges": 413,
+        "Wall Balls": 575
+      }
+    },
+    {
+      "lo_min": 110,
+      "hi_min": 115,
+      "count": 9502,
+      "pct_range": [
+        86.3,
+        89.9
+      ],
+      "avg_overall": 6743,
+      "avg_run_rox": 3815,
+      "avg_pace_8_7": 439,
+      "avg_station_total": 2938,
+      "stations": {
+        "1000m SkiErg": 294,
+        "50m Sled Push": 238,
+        "50m Sled Pull": 399,
+        "80m Burpee Broad Jump": 468,
+        "1000m Row": 327,
+        "200m Farmers Carry": 168,
+        "100m Sandbag Lunges": 436,
+        "Wall Balls": 608
+      }
+    },
+    {
+      "lo_min": 115,
+      "hi_min": 120,
+      "count": 7103,
+      "pct_range": [
+        89.9,
+        92.6
+      ],
+      "avg_overall": 7041,
+      "avg_run_rox": 3984,
+      "avg_pace_8_7": 458,
+      "avg_station_total": 3064,
+      "stations": {
+        "1000m SkiErg": 298,
+        "50m Sled Push": 245,
+        "50m Sled Pull": 415,
+        "80m Burpee Broad Jump": 494,
+        "1000m Row": 333,
+        "200m Farmers Carry": 175,
+        "100m Sandbag Lunges": 461,
+        "Wall Balls": 643
+      }
+    },
+    {
+      "lo_min": 120,
+      "hi_min": 125,
+      "count": 4910,
+      "pct_range": [
+        92.6,
+        94.4
+      ],
+      "avg_overall": 7341,
+      "avg_run_rox": 4164,
+      "avg_pace_8_7": 479,
+      "avg_station_total": 3183,
+      "stations": {
+        "1000m SkiErg": 302,
+        "50m Sled Push": 255,
+        "50m Sled Pull": 433,
+        "80m Burpee Broad Jump": 518,
+        "1000m Row": 337,
+        "200m Farmers Carry": 179,
+        "100m Sandbag Lunges": 481,
+        "Wall Balls": 678
+      }
+    },
+    {
+      "lo_min": 125,
+      "hi_min": 130,
+      "count": 3686,
+      "pct_range": [
+        94.4,
+        95.8
+      ],
+      "avg_overall": 7642,
+      "avg_run_rox": 4341,
+      "avg_pace_8_7": 499,
+      "avg_station_total": 3306,
+      "stations": {
+        "1000m SkiErg": 305,
+        "50m Sled Push": 264,
+        "50m Sled Pull": 448,
+        "80m Burpee Broad Jump": 539,
+        "1000m Row": 343,
+        "200m Farmers Carry": 185,
+        "100m Sandbag Lunges": 506,
+        "Wall Balls": 716
+      }
+    },
+    {
+      "lo_min": 130,
+      "hi_min": 135,
+      "count": 2789,
+      "pct_range": [
+        95.8,
+        96.9
+      ],
+      "avg_overall": 7947,
+      "avg_run_rox": 4499,
+      "avg_pace_8_7": 517,
+      "avg_station_total": 3458,
+      "stations": {
+        "1000m SkiErg": 310,
+        "50m Sled Push": 277,
+        "50m Sled Pull": 465,
+        "80m Burpee Broad Jump": 567,
+        "1000m Row": 348,
+        "200m Farmers Carry": 191,
+        "100m Sandbag Lunges": 544,
+        "Wall Balls": 756
+      }
+    },
+    {
+      "lo_min": 135,
+      "hi_min": 140,
+      "count": 2081,
+      "pct_range": [
+        96.9,
+        97.7
+      ],
+      "avg_overall": 8241,
+      "avg_run_rox": 4689,
+      "avg_pace_8_7": 539,
+      "avg_station_total": 3554,
+      "stations": {
+        "1000m SkiErg": 313,
+        "50m Sled Push": 289,
+        "50m Sled Pull": 484,
+        "80m Burpee Broad Jump": 584,
+        "1000m Row": 351,
+        "200m Farmers Carry": 194,
+        "100m Sandbag Lunges": 549,
+        "Wall Balls": 790
+      }
+    },
+    {
+      "lo_min": 140,
+      "hi_min": 145,
+      "count": 1498,
+      "pct_range": [
+        97.7,
+        98.2
+      ],
+      "avg_overall": 8542,
+      "avg_run_rox": 4839,
+      "avg_pace_8_7": 556,
+      "avg_station_total": 3704,
+      "stations": {
+        "1000m SkiErg": 316,
+        "50m Sled Push": 299,
+        "50m Sled Pull": 501,
+        "80m Burpee Broad Jump": 611,
+        "1000m Row": 358,
+        "200m Farmers Carry": 200,
+        "100m Sandbag Lunges": 578,
+        "Wall Balls": 841
+      }
+    },
+    {
+      "lo_min": 145,
+      "hi_min": 150,
+      "count": 1146,
+      "pct_range": [
+        98.2,
+        98.7
+      ],
+      "avg_overall": 8842,
+      "avg_run_rox": 5023,
+      "avg_pace_8_7": 577,
+      "avg_station_total": 3818,
+      "stations": {
+        "1000m SkiErg": 319,
+        "50m Sled Push": 306,
+        "50m Sled Pull": 512,
+        "80m Burpee Broad Jump": 635,
+        "1000m Row": 362,
+        "200m Farmers Carry": 209,
+        "100m Sandbag Lunges": 610,
+        "Wall Balls": 865
+      }
+    },
+    {
+      "lo_min": 150,
+      "hi_min": 155,
+      "count": 831,
+      "pct_range": [
+        98.7,
+        99.0
+      ],
+      "avg_overall": 9142,
+      "avg_run_rox": 5201,
+      "avg_pace_8_7": 598,
+      "avg_station_total": 3944,
+      "stations": {
+        "1000m SkiErg": 322,
+        "50m Sled Push": 319,
+        "50m Sled Pull": 528,
+        "80m Burpee Broad Jump": 646,
+        "1000m Row": 368,
+        "200m Farmers Carry": 213,
+        "100m Sandbag Lunges": 632,
+        "Wall Balls": 916
+      }
+    },
+    {
+      "lo_min": 155,
+      "hi_min": 160,
+      "count": 680,
+      "pct_range": [
+        99.0,
+        99.2
+      ],
+      "avg_overall": 9442,
+      "avg_run_rox": 5340,
+      "avg_pace_8_7": 614,
+      "avg_station_total": 4113,
+      "stations": {
+        "1000m SkiErg": 325,
+        "50m Sled Push": 332,
+        "50m Sled Pull": 551,
+        "80m Burpee Broad Jump": 689,
+        "1000m Row": 376,
+        "200m Farmers Carry": 221,
+        "100m Sandbag Lunges": 662,
+        "Wall Balls": 957
+      }
+    },
+    {
+      "lo_min": 160,
+      "hi_min": 165,
+      "count": 467,
+      "pct_range": [
+        99.2,
+        99.4
+      ],
+      "avg_overall": 9747,
+      "avg_run_rox": 5508,
+      "avg_pace_8_7": 633,
+      "avg_station_total": 4240,
+      "stations": {
+        "1000m SkiErg": 330,
+        "50m Sled Push": 348,
+        "50m Sled Pull": 570,
+        "80m Burpee Broad Jump": 707,
+        "1000m Row": 376,
+        "200m Farmers Carry": 227,
+        "100m Sandbag Lunges": 684,
+        "Wall Balls": 998
+      }
+    },
+    {
+      "lo_min": 165,
+      "hi_min": 170,
+      "count": 394,
+      "pct_range": [
+        99.4,
+        99.6
+      ],
+      "avg_overall": 10042,
+      "avg_run_rox": 5750,
+      "avg_pace_8_7": 661,
+      "avg_station_total": 4336,
+      "stations": {
+        "1000m SkiErg": 331,
+        "50m Sled Push": 359,
+        "50m Sled Pull": 580,
+        "80m Burpee Broad Jump": 716,
+        "1000m Row": 377,
+        "200m Farmers Carry": 231,
+        "100m Sandbag Lunges": 734,
+        "Wall Balls": 1008
+      }
+    },
+    {
+      "lo_min": 170,
+      "hi_min": 175,
+      "count": 307,
+      "pct_range": [
+        99.6,
+        99.7
+      ],
+      "avg_overall": 10341,
+      "avg_run_rox": 5851,
+      "avg_pace_8_7": 673,
+      "avg_station_total": 4472,
+      "stations": {
+        "1000m SkiErg": 337,
+        "50m Sled Push": 368,
+        "50m Sled Pull": 590,
+        "80m Burpee Broad Jump": 733,
+        "1000m Row": 385,
+        "200m Farmers Carry": 242,
+        "100m Sandbag Lunges": 754,
+        "Wall Balls": 1063
+      }
+    },
+    {
+      "lo_min": 175,
+      "hi_min": 180,
+      "count": 198,
+      "pct_range": [
+        99.7,
+        99.8
+      ],
+      "avg_overall": 10645,
+      "avg_run_rox": 6106,
+      "avg_pace_8_7": 702,
+      "avg_station_total": 4545,
+      "stations": {
+        "1000m SkiErg": 338,
+        "50m Sled Push": 365,
+        "50m Sled Pull": 600,
+        "80m Burpee Broad Jump": 783,
+        "1000m Row": 387,
+        "200m Farmers Carry": 236,
+        "100m Sandbag Lunges": 772,
+        "Wall Balls": 1064
+      }
+    },
+    {
+      "lo_min": 180,
+      "hi_min": 185,
+      "count": 167,
+      "pct_range": [
+        99.8,
+        99.8
+      ],
+      "avg_overall": 10946,
+      "avg_run_rox": 6175,
+      "avg_pace_8_7": 710,
+      "avg_station_total": 4764,
+      "stations": {
+        "1000m SkiErg": 340,
+        "50m Sled Push": 395,
+        "50m Sled Pull": 632,
+        "80m Burpee Broad Jump": 781,
+        "1000m Row": 395,
+        "200m Farmers Carry": 259,
+        "100m Sandbag Lunges": 814,
+        "Wall Balls": 1148
+      }
+    },
+    {
+      "lo_min": 185,
+      "hi_min": 190,
+      "count": 131,
+      "pct_range": [
+        99.8,
+        99.9
+      ],
+      "avg_overall": 11233,
+      "avg_run_rox": 6304,
+      "avg_pace_8_7": 725,
+      "avg_station_total": 4934,
+      "stations": {
+        "1000m SkiErg": 346,
+        "50m Sled Push": 384,
+        "50m Sled Pull": 630,
+        "80m Burpee Broad Jump": 813,
+        "1000m Row": 400,
+        "200m Farmers Carry": 265,
+        "100m Sandbag Lunges": 835,
+        "Wall Balls": 1261
+      }
+    },
+    {
+      "lo_min": 190,
+      "hi_min": 195,
+      "count": 93,
+      "pct_range": [
+        99.9,
+        99.9
+      ],
+      "avg_overall": 11534,
+      "avg_run_rox": 6487,
+      "avg_pace_8_7": 746,
+      "avg_station_total": 5045,
+      "stations": {
+        "1000m SkiErg": 349,
+        "50m Sled Push": 380,
+        "50m Sled Pull": 633,
+        "80m Burpee Broad Jump": 849,
+        "1000m Row": 407,
+        "200m Farmers Carry": 254,
+        "100m Sandbag Lunges": 911,
+        "Wall Balls": 1262
+      }
+    },
+    {
+      "lo_min": 195,
+      "hi_min": 200,
+      "count": 75,
+      "pct_range": [
+        99.9,
+        99.9
+      ],
+      "avg_overall": 11835,
+      "avg_run_rox": 6877,
+      "avg_pace_8_7": 790,
+      "avg_station_total": 5054,
+      "stations": {
+        "1000m SkiErg": 341,
+        "50m Sled Push": 411,
+        "50m Sled Pull": 647,
+        "80m Burpee Broad Jump": 829,
+        "1000m Row": 402,
+        "200m Farmers Carry": 250,
+        "100m Sandbag Lunges": 943,
+        "Wall Balls": 1231
+      }
+    },
+    {
+      "lo_min": 200,
+      "hi_min": 205,
+      "count": 37,
+      "pct_range": [
+        99.9,
+        99.9
+      ],
+      "avg_overall": 12158,
+      "avg_run_rox": 6576,
+      "avg_pace_8_7": 756,
+      "avg_station_total": 5457,
+      "stations": {
+        "1000m SkiErg": 353,
+        "50m Sled Push": 388,
+        "50m Sled Pull": 657,
+        "80m Burpee Broad Jump": 916,
+        "1000m Row": 416,
+        "200m Farmers Carry": 253,
+        "100m Sandbag Lunges": 1035,
+        "Wall Balls": 1439
+      }
+    },
+    {
+      "lo_min": 205,
+      "hi_min": 210,
+      "count": 40,
+      "pct_range": [
+        99.9,
+        100.0
+      ],
+      "avg_overall": 12442,
+      "avg_run_rox": 6606,
+      "avg_pace_8_7": 759,
+      "avg_station_total": 5771,
+      "stations": {
+        "1000m SkiErg": 366,
+        "50m Sled Push": 483,
+        "50m Sled Pull": 696,
+        "80m Burpee Broad Jump": 1018,
+        "1000m Row": 407,
+        "200m Farmers Carry": 284,
+        "100m Sandbag Lunges": 1105,
+        "Wall Balls": 1412
+      }
+    },
+    {
+      "lo_min": 210,
+      "hi_min": 215,
+      "count": 25,
+      "pct_range": [
+        100.0,
+        100.0
+      ],
+      "avg_overall": 12749,
+      "avg_run_rox": 7819,
+      "avg_pace_8_7": 899,
+      "avg_station_total": 5204,
+      "stations": {
+        "1000m SkiErg": 349,
+        "50m Sled Push": 429,
+        "50m Sled Pull": 707,
+        "80m Burpee Broad Jump": 889,
+        "1000m Row": 408,
+        "200m Farmers Carry": 267,
+        "100m Sandbag Lunges": 956,
+        "Wall Balls": 1199
+      }
+    },
+    {
+      "lo_min": 215,
+      "hi_min": 220,
+      "count": 20,
+      "pct_range": [
+        100.0,
+        100.0
+      ],
+      "avg_overall": 13039,
+      "avg_run_rox": 7327,
+      "avg_pace_8_7": 842,
+      "avg_station_total": 5647,
+      "stations": {
+        "1000m SkiErg": 354,
+        "50m Sled Push": 414,
+        "50m Sled Pull": 639,
+        "80m Burpee Broad Jump": 984,
+        "1000m Row": 402,
+        "200m Farmers Carry": 279,
+        "100m Sandbag Lunges": 1048,
+        "Wall Balls": 1527
+      }
+    },
+    {
+      "lo_min": 220,
+      "hi_min": 225,
+      "count": 25,
+      "pct_range": [
+        100.0,
+        100.0
+      ],
+      "avg_overall": 13321,
+      "avg_run_rox": 7453,
+      "avg_pace_8_7": 857,
+      "avg_station_total": 5825,
+      "stations": {
+        "1000m SkiErg": 364,
+        "50m Sled Push": 383,
+        "50m Sled Pull": 680,
+        "80m Burpee Broad Jump": 931,
+        "1000m Row": 445,
+        "200m Farmers Carry": 280,
+        "100m Sandbag Lunges": 1137,
+        "Wall Balls": 1605
+      }
+    },
+    {
+      "lo_min": 225,
+      "hi_min": 230,
+      "count": 9,
+      "pct_range": [
+        100.0,
+        100.0
+      ],
+      "avg_overall": 13694,
+      "avg_run_rox": 7846,
+      "avg_pace_8_7": 902,
+      "avg_station_total": 5736,
+      "stations": {
+        "1000m SkiErg": 367,
+        "50m Sled Push": 485,
+        "50m Sled Pull": 704,
+        "80m Burpee Broad Jump": 1254,
+        "1000m Row": 488,
+        "200m Farmers Carry": 311,
+        "100m Sandbag Lunges": 761,
+        "Wall Balls": 1366
+      }
+    },
+    {
+      "lo_min": 230,
+      "hi_min": 235,
+      "count": 11,
+      "pct_range": [
+        100.0,
+        100.0
+      ],
+      "avg_overall": 13955,
+      "avg_run_rox": 7969,
+      "avg_pace_8_7": 916,
+      "avg_station_total": 5852,
+      "stations": {
+        "1000m SkiErg": 353,
+        "50m Sled Push": 397,
+        "50m Sled Pull": 629,
+        "80m Burpee Broad Jump": 862,
+        "1000m Row": 405,
+        "200m Farmers Carry": 271,
+        "100m Sandbag Lunges": 1095,
+        "Wall Balls": 1840
+      }
+    },
+    {
+      "lo_min": 235,
+      "hi_min": 240,
+      "count": 9,
+      "pct_range": [
+        100.0,
+        100.0
+      ],
+      "avg_overall": 14228,
+      "avg_run_rox": 8280,
+      "avg_pace_8_7": 952,
+      "avg_station_total": 5953,
+      "stations": {
+        "1000m SkiErg": 365,
+        "50m Sled Push": 319,
+        "50m Sled Pull": 699,
+        "80m Burpee Broad Jump": 956,
+        "1000m Row": 388,
+        "200m Farmers Carry": 309,
+        "100m Sandbag Lunges": 1152,
+        "Wall Balls": 1765
+      }
+    }
+  ]
+}

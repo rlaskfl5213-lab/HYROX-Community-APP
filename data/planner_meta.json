@@ -1,0 +1,70 @@
+{
+  "divisions": [
+    {
+      "slug": "MEN",
+      "label": "Men Open",
+      "group": "Single",
+      "total_athletes": 264291
+    },
+    {
+      "slug": "WOMEN",
+      "label": "Women Open",
+      "group": "Single",
+      "total_athletes": 140384
+    },
+    {
+      "slug": "PRO_MEN",
+      "label": "Men Pro",
+      "group": "Single",
+      "total_athletes": 49126
+    },
+    {
+      "slug": "PRO_WOMEN",
+      "label": "Women Pro",
+      "group": "Single",
+      "total_athletes": 21618
+    },
+    {
+      "slug": "MEN_DOUBLES",
+      "label": "Men Doubles",
+      "group": "Double",
+      "total_athletes": 149149
+    },
+    {
+      "slug": "WOMEN_DOUBLES",
+      "label": "Women Doubles",
+      "group": "Double",
+      "total_athletes": 151058
+    },
+    {
+      "slug": "PRO_MEN_DOUBLES",
+      "label": "Men Pro Doubles",
+      "group": "Double",
+      "total_athletes": 29009
+    },
+    {
+      "slug": "PRO_WOMEN_DOUBLES",
+      "label": "Women Pro Doubles",
+      "group": "Double",
+      "total_athletes": 16717
+    },
+    {
+      "slug": "MIXED",
+      "label": "Mixed",
+      "group": "Mixed",
+      "total_athletes": 157933
+    },
+    {
+      "slug": "ADAPTIVE_MEN",
+      "label": "Adaptive Men",
+      "group": "Adaptive",
+      "total_athletes": 630
+    },
+    {
+      "slug": "ADAPTIVE_WOMEN",
+      "label": "Adaptive Women",
+      "group": "Adaptive",
+      "total_athletes": 392
+    }
+  ]
+}
