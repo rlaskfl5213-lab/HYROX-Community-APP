@@ -611,22 +611,22 @@ var TRAINING_STRUCTURES = {
 
 var PERIOD_PLANS = {
   4: [
-    { weeks: '1주',    name: '기초 테스트', desc: '현재 수준 확인, 기본 볼륨 확보' },
-    { weeks: '2~3주',  name: '약점 집중',   desc: '' },
-    { weeks: '4주',    name: '테이퍼링',    desc: '볼륨 감소, 레이스 페이스 확인' }
+    { weeks: '1주',    name: '기준점 잡기',          desc: '현재 페이스와 스테이션 수준을 확인하고 훈련 리듬을 만든다.' },
+    { weeks: '2~3주',  name: '기록 새는 구간 막기', desc: '' },
+    { weeks: '4주',    name: '컨디션 조절',          desc: '운동량을 줄이고 몸을 가볍게 만들어 대회 당일에 맞춘다.' }
   ],
   8: [
-    { weeks: '1~2주',  name: '기초 구축',           desc: '에어로빅 베이스, 동작 숙련' },
-    { weeks: '3~5주',  name: '약점 강화',           desc: '' },
-    { weeks: '6~7주',  name: '레이스 페이스 적응',   desc: '목표 페이스 통합 훈련' },
-    { weeks: '8주',    name: '테이퍼링',             desc: '볼륨 40% 감소, 회복 우선' }
+    { weeks: '1~2주',  name: '러닝 엔진 만들기',     desc: '후반까지 무너지지 않는 기본 체력을 만들고 스테이션 동작을 안정화한다.' },
+    { weeks: '3~5주',  name: '기록 새는 구간 막기', desc: '' },
+    { weeks: '6~7주',  name: '레이스 연결 훈련',     desc: 'Run → Station 전환에 익숙해지고 목표 페이스를 유지하는 연습을 한다.' },
+    { weeks: '8주',    name: '컨디션 조절',           desc: '피로를 줄이고 회복에 집중한다.' }
   ],
   12: [
-    { weeks: '1~3주',  name: '기초 구축',           desc: '에어로빅 베이스, 근력 기반' },
-    { weeks: '4~7주',  name: '약점 강화',           desc: '' },
-    { weeks: '8~10주', name: '레이스 페이스 적응',   desc: '목표 페이스 통합 훈련' },
-    { weeks: '11주',   name: '피크',                desc: '높은 강도, 짧은 볼륨' },
-    { weeks: '12주',   name: '테이퍼링',             desc: '볼륨 50% 감소' }
+    { weeks: '1~3주',  name: '러닝 엔진 만들기',     desc: '후반까지 무너지지 않는 기본 체력을 만들고 스테이션 동작을 안정화한다.' },
+    { weeks: '4~7주',  name: '기록 새는 구간 막기', desc: '' },
+    { weeks: '8~10주', name: '레이스 연결 훈련',     desc: 'Run → Station 전환에 익숙해지고 목표 페이스를 유지하는 연습을 한다.' },
+    { weeks: '11주',   name: '실전 점검',             desc: '대회 흐름을 짧게 재현하고 목표 기록이 현실적인지 확인한다.' },
+    { weeks: '12주',   name: '컨디션 끌어올리기',     desc: '피로는 줄이고 몸 상태는 올려 대회 당일 최고의 컨디션을 준비한다.' }
   ]
 };
 
@@ -744,7 +744,7 @@ function renderRoadmap() {
   var phases = PERIOD_PLANS[period];
   phases.forEach(function (p) {
     var desc = p.desc;
-    if (!desc && p.name.indexOf('약점') !== -1) {
+    if (p.desc === '') {
       desc = weaknessText + ', 점진적 강도 증가';
     }
     var div = document.createElement('div');
