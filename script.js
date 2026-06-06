@@ -240,7 +240,8 @@ function renderResults(data) {
 
   document.getElementById('res-percentile').textContent = 'Top ' + pctData.percentile.toFixed(1) + '%';
   document.getElementById('res-rank').textContent = data.totalAthletes.toLocaleString() + '명 중 약 ' + pctData.rank.toLocaleString() + '등';
-  document.getElementById('res-bucket-range').textContent = rawBucket.lo_min + '~' + rawBucket.hi_min + '분';
+  var bucketRangeEl = document.getElementById('res-bucket-range');
+  if (bucketRangeEl) bucketRangeEl.textContent = rawBucket.lo_min + '~' + rawBucket.hi_min + '분';
 
   // 비율 계산 + targetSeconds 스케일링
   var runRoxRatio = bucket.avg_run_rox / bucket.avg_overall;
@@ -314,10 +315,6 @@ function renderResults(data) {
     '<td>합계</td>' +
     '<td>' + formatTime(targetStationTotal) + '</td>';
   stBody.appendChild(stSumTr);
-
-  // 참고 정보
-  document.getElementById('res-bucket-count').textContent = rawBucket.count.toLocaleString() + '명';
-  document.getElementById('ref-total-athletes').textContent = data.totalAthletes.toLocaleString() + '명';
 
   document.getElementById('results').classList.remove('hidden');
 }
@@ -828,6 +825,20 @@ var RUN_ZONES = [
 
 var RUN_STRIDES = { name: 'Strides', purpose: '신경 자극', desc: '러닝 동작과 케이던스 활성화', session: '6×100m, 회복 자유', note: '85~95% effort' };
 
+var RUN_SUMMARY_ZONES = ['Easy', 'Tempo', 'Threshold'];
+var ERG_SUMMARY_ZONES = ['UT2', 'Race Pace'];
+
+function togglePaceMore(resultId) {
+  var card = document.getElementById(resultId);
+  if (!card) return;
+  var extras = card.querySelectorAll('.tp-zone-extra');
+  var btn = card.querySelector('.tp-more-btn');
+  if (!extras.length || !btn) return;
+  var isHidden = extras[0].classList.contains('hidden');
+  extras.forEach(function (r) { r.classList.toggle('hidden'); });
+  btn.textContent = isHidden ? '▲ 간단히 보기' : '▼ 전체 훈련 페이스 보기';
+}
+
 var ERG_ZONES = [
   { name: 'Recovery',   pct: 0.45, purpose: '회복',          desc: '동작을 유지하며 몸을 풀어주는 페이스',    session: '20~30분 가벼운 페이스' },
   { name: 'UT2',        pct: 0.55, purpose: '기초 지구력',    desc: '유산소 기반을 넓히는 장시간 훈련',        session: '30~60분 일정 페이스' },
@@ -916,9 +927,11 @@ function renderErgZones(prefix, resultId, label) {
   ERG_ZONES.forEach(function (z) {
     var zw = refW * z.pct;
     var split = wattsToSplit500(zw);
-    if (z.highlight) html += '<div class="tp-zone-divider"></div>';
+    var isSummary = ERG_SUMMARY_ZONES.indexOf(z.name) !== -1;
+    var extraCls = isSummary ? '' : ' tp-zone-extra hidden';
+    if (z.highlight) html += '<div class="tp-zone-divider' + (isSummary ? '' : ' tp-zone-extra hidden') + '"></div>';
     var cls = z.highlight ? ' tp-zone-highlight' : '';
-    html += '<div class="tp-zone-row' + cls + '">' +
+    html += '<div class="tp-zone-row' + cls + extraCls + '">' +
       '<span class="tp-zone-name">' + z.name +
         '<span class="tp-zone-purpose">' + z.purpose + '</span>' +
         '<span class="tp-zone-desc">' + z.desc + '</span>' +
@@ -927,6 +940,7 @@ function renderErgZones(prefix, resultId, label) {
         '<span class="tp-zone-watts">' + Math.round(zw) + 'W</span></span></div>';
   });
 
+  html += '<button class="tp-more-btn" onclick="togglePaceMore(\'' + resultId + '\')">▼ 전체 훈련 페이스 보기</button>';
   html += '</div>';
   resultEl.innerHTML = html;
   resultEl.classList.remove('hidden');
@@ -966,7 +980,9 @@ function renderRunZones() {
 
   RUN_ZONES.forEach(function (z) {
     var pace = vdotToPace(vdot, z.pct);
-    html += '<div class="tp-zone-row">' +
+    var isSummary = RUN_SUMMARY_ZONES.indexOf(z.name) !== -1;
+    var extraCls = isSummary ? '' : ' tp-zone-extra hidden';
+    html += '<div class="tp-zone-row' + extraCls + '">' +
       '<span class="tp-zone-name">' + z.name +
         '<span class="tp-zone-purpose">' + z.purpose + '</span>' +
         '<span class="tp-zone-desc">' + z.desc + '</span>' +
@@ -975,13 +991,14 @@ function renderRunZones() {
   });
 
   // Strides (페이스 계산 없이 참고 문구)
-  html += '<div class="tp-zone-row">' +
+  html += '<div class="tp-zone-row tp-zone-extra hidden">' +
     '<span class="tp-zone-name">' + RUN_STRIDES.name +
       '<span class="tp-zone-purpose">' + RUN_STRIDES.purpose + '</span>' +
       '<span class="tp-zone-desc">' + RUN_STRIDES.desc + '</span>' +
       '<span class="tp-zone-session">' + RUN_STRIDES.session + '</span></span>' +
     '<span class="tp-zone-value tp-zone-note">' + RUN_STRIDES.note + '</span></div>';
 
+  html += '<button class="tp-more-btn" onclick="togglePaceMore(\'tp-run-result\')">▼ 전체 훈련 페이스 보기</button>';
   html += '</div>';
   resultEl.innerHTML = html;
   resultEl.classList.remove('hidden');
