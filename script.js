@@ -465,7 +465,8 @@ function renderGapResults(data) {
       curText = formatPace(curVal) + ' ' + item.unit;
       tgtText = formatPace(tgtVal) + ' ' + item.unit;
       var delta = tgtVal - curVal;
-      deltaText = isAhead ? '목표 이상' : (delta >= 0 ? '목표 이상' : '-' + formatPace(Math.abs(delta)) + ' ' + item.unit);
+      if (!isAhead && delta >= 0) { tgtVal = curVal; tgtText = curText; }
+      deltaText = isAhead ? '목표 이상' : (delta >= 0 ? '유지' : '-' + formatPace(Math.abs(delta)) + ' ' + item.unit);
       if (!isAhead && delta < 0 && curVal > 0) {
         var ratio = Math.abs(delta) / curVal;
         if (ratio > biggestRatio) { biggestRatio = ratio; biggestLabel = item.label; biggestDeltaText = deltaText; }
@@ -479,7 +480,8 @@ function renderGapResults(data) {
         curText = formatPace(curVal) + ' ' + item.unit;
         tgtText = formatPace(tgtVal) + ' ' + item.unit;
         var d2 = tgtVal - curVal;
-        deltaText = isAhead ? '목표 이상' : (d2 >= 0 ? '목표 이상' : '-' + formatPace(Math.abs(d2)) + ' ' + item.unit);
+        if (!isAhead && d2 >= 0) { tgtVal = curVal; tgtText = curText; }
+        deltaText = isAhead ? '목표 이상' : (d2 >= 0 ? '유지' : '-' + formatPace(Math.abs(d2)) + ' ' + item.unit);
         if (!isAhead && d2 < 0 && curVal > 0) {
           var r2 = Math.abs(d2) / curVal;
           if (r2 > biggestRatio) { biggestRatio = r2; biggestLabel = item.label; biggestDeltaText = deltaText; }
@@ -490,7 +492,8 @@ function renderGapResults(data) {
         curText = formatTime(curVal);
         tgtText = formatTime(tgtVal);
         var d3 = tgtVal - curVal;
-        deltaText = isAhead ? '목표 이상' : (d3 >= 0 ? '목표 이상' : '-' + formatTime(Math.abs(d3)));
+        if (!isAhead && d3 >= 0) { tgtVal = curVal; tgtText = curText; }
+        deltaText = isAhead ? '목표 이상' : (d3 >= 0 ? '유지' : '-' + formatTime(Math.abs(d3)));
         if (!isAhead && d3 < 0 && curVal > 0) {
           var r3 = Math.abs(d3) / curVal;
           if (r3 > biggestRatio) { biggestRatio = r3; biggestLabel = item.label; biggestDeltaText = deltaText; }
