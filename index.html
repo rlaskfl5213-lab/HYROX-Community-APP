@@ -18,6 +18,7 @@
     <button class="tab active" data-tab="tab-planner">페이스 플래너</button>
     <button class="tab" data-tab="tab-gap">목표 달성 분석</button>
     <button class="tab" data-tab="tab-roadmap">목표 로드맵</button>
+    <button class="tab" data-tab="tab-pace">훈련 페이스</button>
   </nav>
 
   <main class="container">
@@ -366,6 +367,38 @@
     </div><!-- /roadmap-content -->
 
   </div><!-- /tab-roadmap -->
+
+  <!-- ========== 탭: 훈련 페이스 ========== -->
+  <div id="tab-pace" class="tab-content hidden">
+    <section class="card">
+      <h2 class="card-title">훈련 페이스 계산기</h2>
+
+      <div class="form-group">
+        <label>Running 기준 거리</label>
+        <div class="rm-toggle-group" id="tp-run-dist-group">
+          <button class="rm-toggle active" data-value="5000">5km</button>
+          <button class="rm-toggle" data-value="10000">10km</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>PB 기록</label>
+        <div class="time-inputs">
+          <div class="time-field">
+            <input type="number" id="tp-run-min" class="time-input" min="0" max="59" placeholder="MM">
+            <span class="time-label">분</span>
+          </div>
+          <span class="time-sep">:</span>
+          <div class="time-field">
+            <input type="number" id="tp-run-sec" class="time-input" min="0" max="59" placeholder="SS">
+            <span class="time-label">초</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div id="tp-run-result" class="hidden"></div>
+    <div id="tp-hyrox-result" class="hidden"></div>
+  </div><!-- /tab-pace -->
 
   </main>
 

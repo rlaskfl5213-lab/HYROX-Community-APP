@@ -812,6 +812,154 @@ function initRoadmapToggles() {
   });
 }
 
+// --- 훈련 페이스 계산기 ---
+
+var RUN_ZONES = [
+  { name: 'Recovery',      pct: 0.60, session: '30~45분 회복 조깅' },
+  { name: 'Easy',          pct: 0.66, session: '45~60분 유산소 러닝' },
+  { name: 'LSD',           pct: 0.72, session: '60~120분 장거리 러닝' },
+  { name: 'Steady',        pct: 0.78, session: '30~45분 일정 페이스' },
+  { name: 'Marathon Pace', pct: 0.83, session: '40~60분 마라톤 페이스' },
+  { name: 'Tempo',         pct: 0.89, session: '3×10분, 회복 3분' },
+  { name: 'Threshold',     pct: 0.93, session: '20~30분 지속주' },
+  { name: 'VO2 Interval',  pct: 1.02, session: '5×3분, 회복 2분' },
+  { name: 'Repetition',    pct: 1.10, session: '8×200m, 회복 200m 조깅' }
+];
+
+var RUN_STRIDES = { name: 'Strides', session: '6×100m, 회복 자유', note: '85~95% effort' };
+
+var HYROX_PACE_MODEL = {
+  version: 1,
+  pct: { '5000': 0.88, '10000': 0.90 },
+  thresholdPct: 0.93,
+  notice: '러닝 기록만 기반으로 한 추정값입니다. 실제 HYROX 페이스는 스테이션 피로도에 따라 달라질 수 있습니다.'
+};
+
+function calcVDOT(distMeters, pbSeconds) {
+  var t = pbSeconds / 60;
+  var v = distMeters / t;
+  var vo2 = -4.60 + 0.182258 * v + 0.000104 * v * v;
+  var pctMax = 0.8 + 0.1894393 * Math.exp(-0.012778 * t)
+                   + 0.2989558 * Math.exp(-0.1932605 * t);
+  return vo2 / pctMax;
+}
+
+function vdotToPace(vdot, zonePct) {
+  var targetVO2 = vdot * zonePct;
+  var a = 0.000104;
+  var b = 0.182258;
+  var c = -(4.60 + targetVO2);
+  var v = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+  return 1000 / v * 60;
+}
+
+function calcHyroxPace(vdot, dist) {
+  var pct = HYROX_PACE_MODEL.pct[String(dist)];
+  var hyroxPace = vdotToPace(vdot, pct);
+  var thresholdPace = vdotToPace(vdot, HYROX_PACE_MODEL.thresholdPct);
+  var gap = Math.round(hyroxPace - thresholdPace);
+  return {
+    pace: hyroxPace,
+    gap: gap,
+    distLabel: dist === 5000 ? '5km' : '10km'
+  };
+}
+
+function renderRunZones() {
+  var resultEl = document.getElementById('tp-run-result');
+  if (!resultEl) return;
+
+  var minEl = document.getElementById('tp-run-min');
+  var secEl = document.getElementById('tp-run-sec');
+  if (!minEl || !secEl) return;
+
+  var minVal = parseInt(minEl.value);
+  var secVal = parseInt(secEl.value);
+  var hyroxEl = document.getElementById('tp-hyrox-result');
+  if (isNaN(minVal) && isNaN(secVal)) {
+    resultEl.classList.add('hidden');
+    if (hyroxEl) hyroxEl.classList.add('hidden');
+    return;
+  }
+  var pb = (minVal || 0) * 60 + (secVal || 0);
+  if (pb <= 0) {
+    resultEl.classList.add('hidden');
+    if (hyroxEl) hyroxEl.classList.add('hidden');
+    return;
+  }
+
+  var distToggle = document.querySelector('#tp-run-dist-group .rm-toggle.active');
+  if (!distToggle) return;
+  var dist = parseInt(distToggle.dataset.value);
+  var distLabel = dist === 5000 ? '5km' : '10km';
+  var vdot = calcVDOT(dist, pb);
+
+  var html = '<div class="card"><h2 class="card-title">Running 훈련 페이스' +
+    '<span class="tp-vdot">VDOT ' + vdot.toFixed(1) + '</span></h2>';
+
+  RUN_ZONES.forEach(function (z) {
+    var pace = vdotToPace(vdot, z.pct);
+    html += '<div class="tp-zone-row">' +
+      '<span class="tp-zone-name">' + z.name +
+        '<span class="tp-zone-session">' + z.session + '</span></span>' +
+      '<span class="tp-zone-value">' + formatPace(pace) + ' /km</span></div>';
+  });
+
+  // Strides (페이스 계산 없이 참고 문구)
+  html += '<div class="tp-zone-row">' +
+    '<span class="tp-zone-name">' + RUN_STRIDES.name +
+      '<span class="tp-zone-session">' + RUN_STRIDES.session + '</span></span>' +
+    '<span class="tp-zone-value tp-zone-note">' + RUN_STRIDES.note + '</span></div>';
+
+  html += '</div>';
+  resultEl.innerHTML = html;
+  resultEl.classList.remove('hidden');
+
+  // HYROX 예상 런 페이스 (별도 카드)
+  renderHyroxPace(vdot, dist, pb);
+}
+
+function renderHyroxPace(vdot, dist, pb) {
+  var el = document.getElementById('tp-hyrox-result');
+  if (!el) return;
+
+  var result = calcHyroxPace(vdot, dist);
+  var pbMin = Math.floor(pb / 60);
+  var pbSec = pb % 60;
+  var pbText = result.distLabel + ' PB ' + pbMin + ':' + String(pbSec).padStart(2, '0');
+
+  var html = '<div class="card tp-hyrox-card">' +
+    '<h2 class="card-title">HYROX 예상 런 페이스</h2>' +
+    '<div class="tp-hyrox-pace">' + formatPace(result.pace) + ' /km</div>' +
+    '<div class="tp-hyrox-meta">' +
+      '<span>Threshold 대비 +' + result.gap + '초/km</span>' +
+      '<span>' + pbText + ' 기준</span>' +
+    '</div>' +
+    '<p class="tp-hyrox-notice">' + HYROX_PACE_MODEL.notice + '</p>' +
+    '</div>';
+
+  el.innerHTML = html;
+  el.classList.remove('hidden');
+}
+
+function initPaceCalc() {
+  var minEl = document.getElementById('tp-run-min');
+  var secEl = document.getElementById('tp-run-sec');
+  var distGroup = document.getElementById('tp-run-dist-group');
+  if (!minEl || !secEl || !distGroup) return;
+
+  minEl.addEventListener('input', renderRunZones);
+  secEl.addEventListener('input', renderRunZones);
+
+  distGroup.querySelectorAll('.rm-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      distGroup.querySelectorAll('.rm-toggle').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      renderRunZones();
+    });
+  });
+}
+
 // --- 초기화 ---
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -821,7 +969,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 시간 입력 2자리 표시 (분/초)
   document.querySelectorAll('.time-input').forEach(function (input) {
-    if (input.id.indexOf('hours') === -1) {
+    if (input.id.indexOf('hours') === -1 && input.id.indexOf('tp-') === -1) {
       input.value = String(parseInt(input.value) || 0).padStart(2, '0');
       input.addEventListener('blur', function () {
         input.value = String(parseInt(input.value) || 0).padStart(2, '0');
@@ -873,6 +1021,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     initRoadmapToggles();
+    initPaceCalc();
 
     // 로드맵 탭 직접 진입 시 상태 체크
     document.querySelectorAll('.tab[data-tab]').forEach(function (btn) {

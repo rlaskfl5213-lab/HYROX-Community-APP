@@ -744,6 +744,101 @@ tbody tr:last-child td {
   background: var(--color-primary-hover);
 }
 
+/* --- 훈련 페이스 --- */
+
+.tp-vdot {
+  float: right;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--color-text-dim);
+}
+
+.tp-zone-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tp-zone-row:last-child {
+  border-bottom: none;
+}
+
+.tp-zone-name {
+  font-size: 0.9rem;
+}
+
+.tp-zone-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tp-zone-session {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-text-dim);
+  margin-top: 2px;
+}
+
+.tp-zone-note {
+  font-weight: 400;
+  color: var(--color-text-dim);
+  font-size: 0.82rem;
+}
+
+.tp-zone-divider {
+  border-top: 2px solid var(--color-border);
+  margin: 4px 0;
+}
+
+.tp-zone-highlight {
+  background: var(--color-bg);
+  border-radius: 6px;
+  border-bottom: none;
+}
+
+.tp-zone-highlight .tp-zone-name,
+.tp-zone-highlight .tp-zone-value {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.tp-zone-sub {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--color-text-dim);
+  padding: 2px 12px 4px;
+}
+
+.tp-hyrox-pace {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.tp-hyrox-meta {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+  margin-bottom: 12px;
+}
+
+.tp-hyrox-notice {
+  font-size: 0.75rem;
+  color: var(--color-text-dim);
+  text-align: center;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
 /* --- Footer --- */
 
 .site-footer {
