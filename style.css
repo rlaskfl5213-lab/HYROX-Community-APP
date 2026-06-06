@@ -1,18 +1,23 @@
 /* ============================================================
-   HYROX Coach Lab — Styles
+   WePace — Styles
    ============================================================ */
 
 :root {
-  --color-bg: #0B1020;
-  --color-surface: #131A2E;
-  --color-border: #2a2d3a;
-  --color-primary: #3ECFCA;
-  --color-primary-hover: #2DB7B2;
-  --color-text: #F5F7FA;
-  --color-text-dim: #9ca3af;
+  --color-bg: #F7F8FC;
+  --color-surface: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-primary: #2155FF;
+  --color-primary-hover: #1A44CC;
+  --color-text: #111827;
+  --color-text-dim: #6B7280;
   --color-success: #22c55e;
   --color-error: #ef4444;
-  --radius: 10px;
+  --color-accent: #FFD83D;
+  --color-run: #2155FF;
+  --color-row: #0D9488;
+  --color-ski: #7C3AED;
+  --radius: 24px;
+  --radius-sm: 12px;
   --max-width: 900px;
 }
 
@@ -34,14 +39,25 @@ body {
 
 .header {
   text-align: center;
-  padding: 24px 16px 8px;
+  padding: 28px 16px 8px;
 }
 
-.header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
+.logo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.logo-we {
+  color: var(--color-text);
+}
+
+.logo-pace {
   color: var(--color-primary);
-  letter-spacing: 1px;
+}
+
+.logo-dot {
+  color: var(--color-accent);
 }
 
 /* --- 탭 네비게이션 --- */
@@ -56,19 +72,20 @@ body {
 }
 
 .tab {
-  background: transparent;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-text-dim);
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
   cursor: pointer;
   transition: all 0.2s;
+  font-weight: 500;
 }
 
 .tab.active {
   background: var(--color-primary);
-  color: #000;
+  color: #fff;
   border-color: var(--color-primary);
   font-weight: 600;
 }
@@ -92,8 +109,9 @@ body {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 24px;
   margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .card-title {
@@ -119,9 +137,9 @@ body {
 select {
   width: 100%;
   padding: 10px 12px;
-  background: var(--color-bg);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: var(--color-text);
   font-size: 0.95rem;
   appearance: none;
@@ -148,7 +166,7 @@ select {
   text-align: center;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: var(--color-text);
   font-size: 1.1rem;
   font-weight: 600;
@@ -179,9 +197,9 @@ select {
   width: 100%;
   padding: 12px;
   background: var(--color-primary);
-  color: #000;
+  color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -194,10 +212,10 @@ select {
 
 .btn-secondary {
   padding: 8px 16px;
-  background: transparent;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   color: var(--color-text-dim);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 0.85rem;
   cursor: pointer;
   margin-top: 8px;
@@ -273,7 +291,7 @@ tbody tr:last-child td {
 .row-sum td {
   font-weight: 700;
   color: var(--color-primary);
-  border-top: 2px solid var(--color-border);
+  border-top: 2px solid var(--color-primary);
 }
 
 .spec {
@@ -428,11 +446,11 @@ tbody tr:last-child td {
   display: block;
   width: 100%;
   text-align: center;
-  background: transparent;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   color: var(--color-text-dim);
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 999px;
   font-size: 0.85rem;
   cursor: pointer;
   margin-top: 12px;
@@ -449,7 +467,7 @@ tbody tr:last-child td {
   text-align: center;
   padding: 10px;
   background: var(--color-bg);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   margin-bottom: 10px;
 }
 
@@ -474,7 +492,7 @@ tbody tr:last-child td {
 .gap-overview-item {
   padding: 12px;
   background: var(--color-bg);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
 .gap-ov-label {
@@ -528,10 +546,10 @@ tbody tr:last-child td {
 .rm-toggle {
   flex: 1;
   padding: 8px 12px;
-  background: transparent;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   color: var(--color-text-dim);
-  border-radius: 6px;
+  border-radius: 999px;
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -539,7 +557,7 @@ tbody tr:last-child td {
 
 .rm-toggle.active {
   background: var(--color-primary);
-  color: #000;
+  color: #fff;
   border-color: var(--color-primary);
   font-weight: 600;
 }
@@ -585,10 +603,10 @@ tbody tr:last-child td {
   color: var(--color-text-dim);
 }
 
-.rm-difficulty-0 { color: var(--color-text); }
+.rm-difficulty-0 { color: var(--color-text-dim); }
 .rm-difficulty-1 { color: var(--color-success); }
 .rm-difficulty-2 { color: var(--color-primary); }
-.rm-difficulty-3 { color: #f59e0b; }
+.rm-difficulty-3 { color: #D97706; }
 .rm-difficulty-4 { color: var(--color-error); }
 
 .rm-weakness-item {
@@ -597,7 +615,7 @@ tbody tr:last-child td {
   gap: 12px;
   padding: 12px;
   background: var(--color-bg);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   margin-bottom: 8px;
 }
 
@@ -632,7 +650,7 @@ tbody tr:last-child td {
   gap: 12px;
   padding: 12px;
   background: var(--color-bg);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   margin-bottom: 8px;
 }
 
@@ -666,7 +684,7 @@ tbody tr:last-child td {
 .rm-phase-item {
   padding: 12px;
   background: var(--color-bg);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   margin-bottom: 8px;
 }
 
@@ -730,9 +748,9 @@ tbody tr:last-child td {
   display: inline-block;
   padding: 12px 32px;
   background: var(--color-primary);
-  color: #000;
+  color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 1rem;
   font-weight: 700;
   text-decoration: none;
@@ -835,6 +853,21 @@ tbody tr:last-child td {
   font-size: 1rem;
 }
 
+.tp-section {
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  border-left: 4px solid var(--color-border);
+}
+
+.tp-color-run { border-left-color: var(--color-run); }
+.tp-color-row { border-left-color: var(--color-row); }
+.tp-color-ski { border-left-color: var(--color-ski); }
+
+.tp-color-run > label { color: var(--color-run); font-weight: 600; }
+.tp-color-row > label { color: var(--color-row); font-weight: 600; }
+.tp-color-ski > label { color: var(--color-ski); font-weight: 600; }
+
 .tp-label-sub {
   font-weight: 400;
   color: var(--color-text-dim);
@@ -868,8 +901,8 @@ tbody tr:last-child td {
 }
 
 .tp-zone-highlight {
-  background: var(--color-bg);
-  border-radius: 6px;
+  background: #EEF2FF;
+  border-radius: var(--radius-sm);
   border-bottom: none;
 }
 
@@ -890,11 +923,11 @@ tbody tr:last-child td {
   display: block;
   width: 100%;
   text-align: center;
-  background: transparent;
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   color: var(--color-text-dim);
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 999px;
   font-size: 0.85rem;
   cursor: pointer;
   margin-top: 12px;
@@ -905,9 +938,14 @@ tbody tr:last-child td {
   color: var(--color-text);
 }
 
+.tp-hyrox-card {
+  background: #FFFBEB;
+  border-color: #FDE68A;
+}
+
 .tp-hyrox-pace {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   color: var(--color-primary);
   text-align: center;
   margin-bottom: 12px;
