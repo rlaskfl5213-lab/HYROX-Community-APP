@@ -409,12 +409,12 @@ var GAP_PACE_ITEMS = [
   { key: 'running', label: 'Running', isPace: true, unit: '/km', extra: false },
   { key: '1000m SkiErg', label: 'SkiErg', div2: true, unit: '/500m', extra: false },
   { key: '50m Sled Push', label: 'Sled Push', unit: '', extra: false },
-  { key: '1000m Row', label: 'Row', div2: true, unit: '/500m', extra: false },
-  { key: 'Wall Balls', label: 'Wall Balls', unit: '', extra: false },
-  { key: '50m Sled Pull', label: 'Sled Pull', unit: '', extra: true },
-  { key: '80m Burpee Broad Jump', label: 'Burpee Broad Jump', unit: '', extra: true },
+  { key: '50m Sled Pull', label: 'Sled Pull', unit: '', extra: false },
+  { key: '80m Burpee Broad Jump', label: 'Burpee Broad Jump', unit: '', extra: false },
+  { key: '1000m Row', label: 'RowErg', div2: true, unit: '/500m', extra: true },
   { key: '200m Farmers Carry', label: 'Farmers Carry', unit: '', extra: true },
-  { key: '100m Sandbag Lunges', label: 'Sandbag Lunges', unit: '', extra: true }
+  { key: '100m Sandbag Lunges', label: 'Sandbag Lunges', unit: '', extra: true },
+  { key: 'Wall Balls', label: 'Wall Balls', unit: '', extra: true }
 ];
 
 function renderGapResults(data) {
@@ -815,18 +815,18 @@ function initRoadmapToggles() {
 // --- 훈련 페이스 계산기 ---
 
 var RUN_ZONES = [
-  { name: 'Recovery',      pct: 0.60, session: '30~45분 회복 조깅' },
-  { name: 'Easy',          pct: 0.66, session: '45~60분 유산소 러닝' },
-  { name: 'LSD',           pct: 0.72, session: '60~120분 장거리 러닝' },
-  { name: 'Steady',        pct: 0.78, session: '30~45분 일정 페이스' },
-  { name: 'Marathon Pace', pct: 0.83, session: '40~60분 마라톤 페이스' },
-  { name: 'Tempo',         pct: 0.89, session: '3×10분, 회복 3분' },
-  { name: 'Threshold',     pct: 0.93, session: '20~30분 지속주' },
-  { name: 'VO2 Interval',  pct: 1.02, session: '5×3분, 회복 2분' },
-  { name: 'Repetition',    pct: 1.10, session: '8×200m, 회복 200m 조깅' }
+  { name: 'Recovery',      pct: 0.60, purpose: '회복',          desc: '몸을 회복하고 피로를 풀기 위한 페이스',       session: '30~45분 회복 조깅' },
+  { name: 'Easy',          pct: 0.66, purpose: '기초 지구력',    desc: '기본 유산소 능력과 심폐지구력 향상',          session: '45~60분 유산소 러닝' },
+  { name: 'LSD',           pct: 0.72, purpose: '장거리 지구력',  desc: '오랜 시간 지속하는 지구력 향상',              session: '60~120분 장거리 러닝' },
+  { name: 'Steady',        pct: 0.78, purpose: '페이스 안정',    desc: '일정 페이스 유지 능력 향상',                  session: '30~45분 일정 페이스' },
+  { name: 'Marathon Pace', pct: 0.83, purpose: '지속 페이스',    desc: '레이스 후반 페이스 유지 능력 향상',            session: '40~60분 마라톤 페이스' },
+  { name: 'Tempo',         pct: 0.89, purpose: '젖산 내성',      desc: '높은 강도를 오래 유지하는 능력 향상',          session: '3×10분, 회복 3분' },
+  { name: 'Threshold',     pct: 0.93, purpose: '역치 향상',      desc: '젖산역치(LT) 향상으로 기록 개선',             session: '20~30분 지속주' },
+  { name: 'VO2 Interval',  pct: 1.02, purpose: '최대산소섭취량',  desc: '최대 산소 섭취 능력 향상',                    session: '5×3분, 회복 2분' },
+  { name: 'Repetition',    pct: 1.10, purpose: '러닝 경제성',    desc: '러닝 효율과 스피드 향상',                     session: '8×200m, 회복 200m 조깅' }
 ];
 
-var RUN_STRIDES = { name: 'Strides', session: '6×100m, 회복 자유', note: '85~95% effort' };
+var RUN_STRIDES = { name: 'Strides', purpose: '신경 자극', desc: '러닝 동작과 케이던스 활성화', session: '6×100m, 회복 자유', note: '85~95% effort' };
 
 var HYROX_PACE_MODEL = {
   version: 1,
@@ -894,13 +894,15 @@ function renderRunZones() {
   var distLabel = dist === 5000 ? '5km' : '10km';
   var vdot = calcVDOT(dist, pb);
 
-  var html = '<div class="card"><h2 class="card-title">Running 훈련 페이스' +
+  var html = '<div class="card"><h2 class="card-title">러닝 훈련 페이스' +
     '<span class="tp-vdot">VDOT ' + vdot.toFixed(1) + '</span></h2>';
 
   RUN_ZONES.forEach(function (z) {
     var pace = vdotToPace(vdot, z.pct);
     html += '<div class="tp-zone-row">' +
       '<span class="tp-zone-name">' + z.name +
+        '<span class="tp-zone-purpose">' + z.purpose + '</span>' +
+        '<span class="tp-zone-desc">' + z.desc + '</span>' +
         '<span class="tp-zone-session">' + z.session + '</span></span>' +
       '<span class="tp-zone-value">' + formatPace(pace) + ' /km</span></div>';
   });
@@ -908,6 +910,8 @@ function renderRunZones() {
   // Strides (페이스 계산 없이 참고 문구)
   html += '<div class="tp-zone-row">' +
     '<span class="tp-zone-name">' + RUN_STRIDES.name +
+      '<span class="tp-zone-purpose">' + RUN_STRIDES.purpose + '</span>' +
+      '<span class="tp-zone-desc">' + RUN_STRIDES.desc + '</span>' +
       '<span class="tp-zone-session">' + RUN_STRIDES.session + '</span></span>' +
     '<span class="tp-zone-value tp-zone-note">' + RUN_STRIDES.note + '</span></div>';
 

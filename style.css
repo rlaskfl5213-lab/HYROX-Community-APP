@@ -776,12 +776,30 @@ tbody tr:last-child td {
   white-space: nowrap;
 }
 
-.tp-zone-session {
+.tp-zone-purpose {
   display: block;
   font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-top: 2px;
+  opacity: 0.8;
+}
+
+.tp-zone-desc {
+  display: block;
+  font-size: 0.72rem;
   font-weight: 400;
   color: var(--color-text-dim);
-  margin-top: 2px;
+  margin-top: 1px;
+}
+
+.tp-zone-session {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--color-text-dim);
+  margin-top: 1px;
+  opacity: 0.7;
 }
 
 .tp-zone-note {
