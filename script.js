@@ -839,6 +839,8 @@ function togglePaceMore(resultId) {
   btn.textContent = isHidden ? '▲ 간단히 보기' : '▼ 전체 훈련 페이스 보기';
 }
 
+var ERG_500_TO_1000_FACTOR = 0.88;
+
 var ERG_ZONES = [
   { name: 'Recovery',   pct: 0.45, purpose: '회복',          desc: '동작을 유지하며 몸을 풀어주는 페이스',    session: '20~30분 가벼운 페이스' },
   { name: 'UT2',        pct: 0.55, purpose: '기초 지구력',    desc: '유산소 기반을 넓히는 장시간 훈련',        session: '30~60분 일정 페이스' },
@@ -897,6 +899,15 @@ function wattsToSplit500(watts) {
   return pace * 500;
 }
 
+function c2RefWatts(pbSeconds, distance) {
+  if (distance === 500) {
+    var pace = pbSeconds / 500;
+    var watts500 = 2.80 / (pace * pace * pace);
+    return watts500 * ERG_500_TO_1000_FACTOR;
+  }
+  return c2Watts(pbSeconds);
+}
+
 function renderErgZones(prefix, resultId, label) {
   var resultEl = document.getElementById(resultId);
   if (!resultEl) return;
@@ -917,12 +928,17 @@ function renderErgZones(prefix, resultId, label) {
     return;
   }
 
-  var refW = c2Watts(pb);
+  var distToggle = document.querySelector('#tp-' + prefix + '-dist-group .rm-toggle.active');
+  var dist = distToggle ? parseInt(distToggle.dataset.value) : 1000;
+  var refW = c2RefWatts(pb, dist);
   var pbMin = Math.floor(pb / 60);
   var pbSec = pb % 60;
   var pbText = pbMin + ':' + String(pbSec).padStart(2, '0');
+  var refLabel = dist === 500
+    ? '기준 PB: ' + pbText + ' (500m) · 추정 1000m 기준 출력: ' + Math.round(refW) + 'W'
+    : '기준 PB: ' + pbText + ' (1000m) · 기준 출력: ' + Math.round(refW) + 'W';
   var html = '<div class="card"><h2 class="card-title">' + label + ' 훈련 페이스</h2>' +
-    '<div class="tp-erg-ref">기준 PB: ' + pbText + ' · 기준 출력: ' + Math.round(refW) + 'W</div>';
+    '<div class="tp-erg-ref">' + refLabel + '</div>';
 
   ERG_ZONES.forEach(function (z) {
     var zw = refW * z.pct;
@@ -1050,17 +1066,37 @@ function initPaceCalc() {
   // RowErg
   var rowMin = document.getElementById('tp-row-min');
   var rowSec = document.getElementById('tp-row-sec');
+  var rowDistGroup = document.getElementById('tp-row-dist-group');
   if (rowMin && rowSec) {
     rowMin.addEventListener('input', function () { renderErgZones('row', 'tp-row-result', 'RowErg'); });
     rowSec.addEventListener('input', function () { renderErgZones('row', 'tp-row-result', 'RowErg'); });
+  }
+  if (rowDistGroup) {
+    rowDistGroup.querySelectorAll('.rm-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        rowDistGroup.querySelectorAll('.rm-toggle').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        renderErgZones('row', 'tp-row-result', 'RowErg');
+      });
+    });
   }
 
   // SkiErg
   var skiMin = document.getElementById('tp-ski-min');
   var skiSec = document.getElementById('tp-ski-sec');
+  var skiDistGroup = document.getElementById('tp-ski-dist-group');
   if (skiMin && skiSec) {
     skiMin.addEventListener('input', function () { renderErgZones('ski', 'tp-ski-result', 'SkiErg'); });
     skiSec.addEventListener('input', function () { renderErgZones('ski', 'tp-ski-result', 'SkiErg'); });
+  }
+  if (skiDistGroup) {
+    skiDistGroup.querySelectorAll('.rm-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        skiDistGroup.querySelectorAll('.rm-toggle').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        renderErgZones('ski', 'tp-ski-result', 'SkiErg');
+      });
+    });
   }
 }
 
