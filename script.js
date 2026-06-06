@@ -316,7 +316,7 @@ function renderResults(data) {
   stBody.appendChild(stSumTr);
 
   // 참고 정보
-  document.getElementById('res-bucket-count').textContent = bucket.count.toLocaleString() + '명';
+  document.getElementById('res-bucket-count').textContent = rawBucket.count.toLocaleString() + '명';
   document.getElementById('ref-total-athletes').textContent = data.totalAthletes.toLocaleString() + '명';
 
   document.getElementById('results').classList.remove('hidden');
