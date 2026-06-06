@@ -828,6 +828,16 @@ var RUN_ZONES = [
 
 var RUN_STRIDES = { name: 'Strides', purpose: '신경 자극', desc: '러닝 동작과 케이던스 활성화', session: '6×100m, 회복 자유', note: '85~95% effort' };
 
+var ERG_ZONES = [
+  { name: 'Recovery',   pct: 0.45, purpose: '회복',          desc: '동작을 유지하며 몸을 풀어주는 페이스',    session: '20~30분 가벼운 페이스' },
+  { name: 'UT2',        pct: 0.55, purpose: '기초 지구력',    desc: '유산소 기반을 넓히는 장시간 훈련',        session: '30~60분 일정 페이스' },
+  { name: 'UT1',        pct: 0.65, purpose: '유산소 발달',    desc: '유산소 역량을 끌어올리는 중강도 훈련',     session: '20~40분 일정 페이스' },
+  { name: 'Threshold',  pct: 0.79, purpose: '역치 향상',      desc: '높은 출력을 유지하는 능력 향상',          session: '4×5분, 회복 2분' },
+  { name: 'Race Pace',  pct: 0.92, purpose: '레이스 적응',    desc: 'HYROX 실전 강도 적응',                  session: '3×1000m, 회복 3분', highlight: true },
+  { name: 'VO2',        pct: 1.00, purpose: '최대산소섭취량',  desc: '최대 유산소 출력 향상',                  session: '6×500m, 회복 2분' },
+  { name: 'Sprint',     pct: 1.15, purpose: '파워',           desc: '단거리 폭발적 출력 향상',                session: '8×250m, 회복 충분' }
+];
+
 var HYROX_PACE_MODEL = {
   version: 1,
   pct: { '5000': 0.88, '10000': 0.90 },
@@ -863,6 +873,63 @@ function calcHyroxPace(vdot, dist) {
     gap: gap,
     distLabel: dist === 5000 ? '5km' : '10km'
   };
+}
+
+function c2Watts(pb1000Seconds) {
+  var split500 = pb1000Seconds / 2;
+  var pace = split500 / 500;
+  return 2.80 / (pace * pace * pace);
+}
+
+function wattsToSplit500(watts) {
+  var pace = Math.pow(2.80 / watts, 1 / 3);
+  return pace * 500;
+}
+
+function renderErgZones(prefix, resultId, label) {
+  var resultEl = document.getElementById(resultId);
+  if (!resultEl) return;
+
+  var minEl = document.getElementById('tp-' + prefix + '-min');
+  var secEl = document.getElementById('tp-' + prefix + '-sec');
+  if (!minEl || !secEl) return;
+
+  var minVal = parseInt(minEl.value);
+  var secVal = parseInt(secEl.value);
+  if (isNaN(minVal) && isNaN(secVal)) {
+    resultEl.classList.add('hidden');
+    return;
+  }
+  var pb = (minVal || 0) * 60 + (secVal || 0);
+  if (pb <= 0) {
+    resultEl.classList.add('hidden');
+    return;
+  }
+
+  var refW = c2Watts(pb);
+  var pbMin = Math.floor(pb / 60);
+  var pbSec = pb % 60;
+  var pbText = pbMin + ':' + String(pbSec).padStart(2, '0');
+  var html = '<div class="card"><h2 class="card-title">' + label + ' 훈련 페이스</h2>' +
+    '<div class="tp-erg-ref">기준 PB: ' + pbText + ' · 기준 출력: ' + Math.round(refW) + 'W</div>';
+
+  ERG_ZONES.forEach(function (z) {
+    var zw = refW * z.pct;
+    var split = wattsToSplit500(zw);
+    if (z.highlight) html += '<div class="tp-zone-divider"></div>';
+    var cls = z.highlight ? ' tp-zone-highlight' : '';
+    html += '<div class="tp-zone-row' + cls + '">' +
+      '<span class="tp-zone-name">' + z.name +
+        '<span class="tp-zone-purpose">' + z.purpose + '</span>' +
+        '<span class="tp-zone-desc">' + z.desc + '</span>' +
+        '<span class="tp-zone-session">' + z.session + '</span></span>' +
+      '<span class="tp-zone-value">' + formatPace(split) + ' /500m' +
+        '<span class="tp-zone-watts">' + Math.round(zw) + 'W</span></span></div>';
+  });
+
+  html += '</div>';
+  resultEl.innerHTML = html;
+  resultEl.classList.remove('hidden');
 }
 
 function renderRunZones() {
@@ -962,6 +1029,22 @@ function initPaceCalc() {
       renderRunZones();
     });
   });
+
+  // RowErg
+  var rowMin = document.getElementById('tp-row-min');
+  var rowSec = document.getElementById('tp-row-sec');
+  if (rowMin && rowSec) {
+    rowMin.addEventListener('input', function () { renderErgZones('row', 'tp-row-result', 'RowErg'); });
+    rowSec.addEventListener('input', function () { renderErgZones('row', 'tp-row-result', 'RowErg'); });
+  }
+
+  // SkiErg
+  var skiMin = document.getElementById('tp-ski-min');
+  var skiSec = document.getElementById('tp-ski-sec');
+  if (skiMin && skiSec) {
+    skiMin.addEventListener('input', function () { renderErgZones('ski', 'tp-ski-result', 'SkiErg'); });
+    skiSec.addEventListener('input', function () { renderErgZones('ski', 'tp-ski-result', 'SkiErg'); });
+  }
 }
 
 // --- 초기화 ---

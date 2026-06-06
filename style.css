@@ -802,6 +802,27 @@ tbody tr:last-child td {
   opacity: 0.7;
 }
 
+.tp-label-sub {
+  font-weight: 400;
+  color: var(--color-text-dim);
+  font-size: 0.75rem;
+  margin-left: 4px;
+}
+
+.tp-erg-ref {
+  font-size: 0.82rem;
+  color: var(--color-text-dim);
+  margin-bottom: 14px;
+}
+
+.tp-zone-watts {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--color-text-dim);
+  margin-top: 2px;
+}
+
 .tp-zone-note {
   font-weight: 400;
   color: var(--color-text-dim);
