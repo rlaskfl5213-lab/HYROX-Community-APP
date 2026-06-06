@@ -802,6 +802,39 @@ tbody tr:last-child td {
   opacity: 0.7;
 }
 
+.tp-input-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tp-input-line .rm-toggle-group {
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+.tp-input-line .rm-toggle {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.tp-input-line .time-inputs {
+  flex-shrink: 0;
+}
+
+.tp-input-sm {
+  width: 44px;
+  padding: 6px 2px;
+  font-size: 0.95rem;
+}
+
+.tp-input-line .time-sep {
+  padding-bottom: 12px;
+  font-size: 1rem;
+}
+
 .tp-label-sub {
   font-weight: 400;
   color: var(--color-text-dim);

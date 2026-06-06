@@ -361,61 +361,64 @@
       <h2 class="card-title">훈련 페이스 계산기</h2>
 
       <div class="form-group">
-        <label>Running 기준 거리</label>
-        <div class="rm-toggle-group" id="tp-run-dist-group">
-          <button class="rm-toggle active" data-value="5000">5km</button>
-          <button class="rm-toggle" data-value="10000">10km</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>PB 기록</label>
-        <div class="time-inputs">
-          <div class="time-field">
-            <input type="number" id="tp-run-min" class="time-input" min="0" max="59" placeholder="MM">
-            <span class="time-label">분</span>
+        <label>Running</label>
+        <div class="tp-input-line">
+          <div class="rm-toggle-group" id="tp-run-dist-group">
+            <button class="rm-toggle active" data-value="5000">5km</button>
+            <button class="rm-toggle" data-value="10000">10km</button>
           </div>
-          <span class="time-sep">:</span>
-          <div class="time-field">
-            <input type="number" id="tp-run-sec" class="time-input" min="0" max="59" placeholder="SS">
-            <span class="time-label">초</span>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>RowErg PB</label>
-        <div class="rm-toggle-group" id="tp-row-dist-group">
-          <button class="rm-toggle active" data-value="500">500m</button>
-          <button class="rm-toggle" data-value="1000">1000m</button>
-        </div>
-        <div class="time-inputs" style="margin-top:8px">
-          <div class="time-field">
-            <input type="number" id="tp-row-min" class="time-input" min="0" max="59" placeholder="MM">
-            <span class="time-label">분</span>
-          </div>
-          <span class="time-sep">:</span>
-          <div class="time-field">
-            <input type="number" id="tp-row-sec" class="time-input" min="0" max="59" placeholder="SS">
-            <span class="time-label">초</span>
+          <div class="time-inputs">
+            <div class="time-field">
+              <input type="number" id="tp-run-min" class="time-input tp-input-sm" min="0" max="59" placeholder="MM">
+              <span class="time-label">분</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="time-field">
+              <input type="number" id="tp-run-sec" class="time-input tp-input-sm" min="0" max="59" placeholder="SS">
+              <span class="time-label">초</span>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="form-group">
-        <label>SkiErg PB</label>
-        <div class="rm-toggle-group" id="tp-ski-dist-group">
-          <button class="rm-toggle active" data-value="500">500m</button>
-          <button class="rm-toggle" data-value="1000">1000m</button>
-        </div>
-        <div class="time-inputs" style="margin-top:8px">
-          <div class="time-field">
-            <input type="number" id="tp-ski-min" class="time-input" min="0" max="59" placeholder="MM">
-            <span class="time-label">분</span>
+        <label>RowErg</label>
+        <div class="tp-input-line">
+          <div class="rm-toggle-group" id="tp-row-dist-group">
+            <button class="rm-toggle active" data-value="500">500m</button>
+            <button class="rm-toggle" data-value="1000">1000m</button>
           </div>
-          <span class="time-sep">:</span>
-          <div class="time-field">
-            <input type="number" id="tp-ski-sec" class="time-input" min="0" max="59" placeholder="SS">
-            <span class="time-label">초</span>
+          <div class="time-inputs">
+            <div class="time-field">
+              <input type="number" id="tp-row-min" class="time-input tp-input-sm" min="0" max="59" placeholder="MM">
+              <span class="time-label">분</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="time-field">
+              <input type="number" id="tp-row-sec" class="time-input tp-input-sm" min="0" max="59" placeholder="SS">
+              <span class="time-label">초</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>SkiErg</label>
+        <div class="tp-input-line">
+          <div class="rm-toggle-group" id="tp-ski-dist-group">
+            <button class="rm-toggle active" data-value="500">500m</button>
+            <button class="rm-toggle" data-value="1000">1000m</button>
+          </div>
+          <div class="time-inputs">
+            <div class="time-field">
+              <input type="number" id="tp-ski-min" class="time-input tp-input-sm" min="0" max="59" placeholder="MM">
+              <span class="time-label">분</span>
+            </div>
+            <span class="time-sep">:</span>
+            <div class="time-field">
+              <input type="number" id="tp-ski-sec" class="time-input tp-input-sm" min="0" max="59" placeholder="SS">
+              <span class="time-label">초</span>
+            </div>
           </div>
         </div>
       </div>
