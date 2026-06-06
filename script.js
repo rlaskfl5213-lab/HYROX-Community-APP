@@ -125,6 +125,79 @@ function findBucket(buckets, targetMinutes) {
   return buckets[buckets.length - 1];
 }
 
+// --- bucket 보간 ---
+
+function lerpVal(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function lerpBucket(a, b, t) {
+  var result = {
+    avg_overall:       lerpVal(a.avg_overall, b.avg_overall, t),
+    avg_run_rox:       lerpVal(a.avg_run_rox, b.avg_run_rox, t),
+    avg_pace_8_7:      lerpVal(a.avg_pace_8_7, b.avg_pace_8_7, t),
+    avg_station_total: lerpVal(a.avg_station_total, b.avg_station_total, t),
+    stations: {}
+  };
+  var keys = Object.keys(a.stations);
+  for (var i = 0; i < keys.length; i++) {
+    result.stations[keys[i]] = lerpVal(a.stations[keys[i]], b.stations[keys[i]], t);
+  }
+  return result;
+}
+
+function copyBucket(bucket) {
+  var result = {
+    avg_overall:       bucket.avg_overall,
+    avg_run_rox:       bucket.avg_run_rox,
+    avg_pace_8_7:      bucket.avg_pace_8_7,
+    avg_station_total: bucket.avg_station_total,
+    stations: {}
+  };
+  var keys = Object.keys(bucket.stations);
+  for (var i = 0; i < keys.length; i++) {
+    result.stations[keys[i]] = bucket.stations[keys[i]];
+  }
+  return result;
+}
+
+function getInterpolatedBucket(buckets, targetMinutes) {
+  if (targetMinutes <= buckets[0].lo_min) {
+    return copyBucket(buckets[0]);
+  }
+  if (targetMinutes >= buckets[buckets.length - 1].hi_min) {
+    return copyBucket(buckets[buckets.length - 1]);
+  }
+
+  var idx = -1;
+  for (var i = 0; i < buckets.length; i++) {
+    if (targetMinutes >= buckets[i].lo_min && targetMinutes < buckets[i].hi_min) {
+      idx = i;
+      break;
+    }
+  }
+  if (idx === -1) return copyBucket(buckets[buckets.length - 1]);
+
+  var midA = (buckets[idx].lo_min + buckets[idx].hi_min) / 2;
+  var bucketA, bucketB, t;
+
+  if (targetMinutes <= midA && idx > 0) {
+    var midPrev = (buckets[idx - 1].lo_min + buckets[idx - 1].hi_min) / 2;
+    bucketA = buckets[idx - 1];
+    bucketB = buckets[idx];
+    t = (targetMinutes - midPrev) / (midA - midPrev);
+  } else if (targetMinutes > midA && idx < buckets.length - 1) {
+    var midNext = (buckets[idx + 1].lo_min + buckets[idx + 1].hi_min) / 2;
+    bucketA = buckets[idx];
+    bucketB = buckets[idx + 1];
+    t = (targetMinutes - midA) / (midNext - midA);
+  } else {
+    return copyBucket(buckets[idx]);
+  }
+
+  return lerpBucket(bucketA, bucketB, t);
+}
+
 // --- 핵심 계산 ---
 
 function calculate() {
@@ -139,13 +212,15 @@ function calculate() {
 
   loadDivision(slug).then(function (divData) {
     var targetMinutes = targetSeconds / 60;
-    var bucket = findBucket(divData.buckets, targetMinutes);
+    var bucket = getInterpolatedBucket(divData.buckets, targetMinutes);
+    var rawBucket = findBucket(divData.buckets, targetMinutes);
 
     renderResults({
       targetSeconds: targetSeconds,
       targetMinutes: targetMinutes,
       slug: slug,
       bucket: bucket,
+      rawBucket: rawBucket,
       totalAthletes: divData.total_athletes
     });
   });
@@ -159,12 +234,13 @@ function renderResults(data) {
   // 요약
   document.getElementById('res-target').textContent = formatTime(data.targetSeconds);
 
-  // 백분위 + 순위 (공통 함수 사용)
-  var pctData = calculatePercentile(divisionCache[data.slug].buckets, bucket, data.targetMinutes, data.totalAthletes);
+  // 백분위 + 순위 (원본 bucket 사용)
+  var rawBucket = data.rawBucket;
+  var pctData = calculatePercentile(divisionCache[data.slug].buckets, rawBucket, data.targetMinutes, data.totalAthletes);
 
   document.getElementById('res-percentile').textContent = 'Top ' + pctData.percentile.toFixed(1) + '%';
   document.getElementById('res-rank').textContent = data.totalAthletes.toLocaleString() + '명 중 약 ' + pctData.rank.toLocaleString() + '등';
-  document.getElementById('res-bucket-range').textContent = bucket.lo_min + '~' + bucket.hi_min + '분';
+  document.getElementById('res-bucket-range').textContent = rawBucket.lo_min + '~' + rawBucket.hi_min + '분';
 
   // 비율 계산 + targetSeconds 스케일링
   var runRoxRatio = bucket.avg_run_rox / bucket.avg_overall;
@@ -294,22 +370,25 @@ function calculateGap() {
   loadDivision(slug).then(function (divData) {
     var targetMinutes = targetSeconds / 60;
     var currentMinutes = currentSeconds / 60;
-    var targetBucket = findBucket(divData.buckets, targetMinutes);
-    var currentBucket = findBucket(divData.buckets, currentMinutes);
+    var targetBucket = getInterpolatedBucket(divData.buckets, targetMinutes);
+    var currentBucket = getInterpolatedBucket(divData.buckets, currentMinutes);
+    var rawTargetBucket = findBucket(divData.buckets, targetMinutes);
+    var rawCurrentBucket = findBucket(divData.buckets, currentMinutes);
 
     var runRoxRatio = targetBucket.avg_run_rox / targetBucket.avg_overall;
 
     var targetRunRox = targetSeconds * runRoxRatio;
     var targetStation = targetSeconds - targetRunRox;
-    var currentRunRox = currentSeconds * runRoxRatio;
+    var currentRunRoxRatio = currentBucket.avg_run_rox / currentBucket.avg_overall;
+    var currentRunRox = currentSeconds * currentRunRoxRatio;
     var currentStation = currentSeconds - currentRunRox;
 
     var totalGap = currentSeconds - targetSeconds;
     var runRoxGap = currentRunRox - targetRunRox;
     var stationGap = currentStation - targetStation;
 
-    var targetPct = calculatePercentile(divData.buckets, targetBucket, targetMinutes, divData.total_athletes);
-    var currentPct = calculatePercentile(divData.buckets, currentBucket, currentMinutes, divData.total_athletes);
+    var targetPct = calculatePercentile(divData.buckets, rawTargetBucket, targetMinutes, divData.total_athletes);
+    var currentPct = calculatePercentile(divData.buckets, rawCurrentBucket, currentMinutes, divData.total_athletes);
 
     renderGapResults({
       slug: slug,
