@@ -5,7 +5,7 @@
 // --- 스테이션 매핑 ---
 
 var FOOTER_TEXT = 'Made by RUNRUN NARI';
-var KAKAO_CHANNEL_URL = 'http://pf.kakao.com/_xbUHGX/friend';
+var KAKAO_CHANNEL_URL = 'http://pf.kakao.com/_MLunX/friend';
 var CTA_TEXT = '무료 HYROX 훈련 자료 받기 →';
 var CTA_DESCRIPTION = '목표 로드맵은 훈련 방향을 제시합니다.\n더 자세한 HYROX 훈련 프로그램과 주간 가이드는 아래에서 확인할 수 있습니다.';
 
