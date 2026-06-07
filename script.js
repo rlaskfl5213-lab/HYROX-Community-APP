@@ -1100,10 +1100,41 @@ function initPaceCalc() {
   }
 }
 
+// --- PWA 안내 ---
+
+function initPwaBanner() {
+  var banner = document.getElementById('pwa-banner');
+  if (!banner) return;
+
+  // standalone 모드면 숨김
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+    banner.classList.add('hidden');
+    return;
+  }
+
+  document.getElementById('pwa-close').addEventListener('click', function () {
+    banner.classList.add('hidden');
+  });
+
+  document.getElementById('pwa-how-btn').addEventListener('click', function () {
+    document.getElementById('pwa-modal-overlay').classList.remove('hidden');
+  });
+
+  var overlay = document.getElementById('pwa-modal-overlay');
+  document.getElementById('pwa-modal-close').addEventListener('click', function () {
+    overlay.classList.add('hidden');
+  });
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) overlay.classList.add('hidden');
+  });
+}
+
 // --- 초기화 ---
 
 document.addEventListener('DOMContentLoaded', function () {
   // Footer
+  initPwaBanner();
+
   var footerEl = document.getElementById('footer-credit');
   footerEl.textContent = FOOTER_TEXT;
 

@@ -24,6 +24,36 @@
     </div>
   </header>
 
+  <!-- 홈 화면 안내 -->
+  <div id="pwa-banner" class="pwa-link">
+    <a id="pwa-how-btn" class="pwa-link-text">📱 홈 화면에 추가하기</a>
+    <button id="pwa-close" class="pwa-link-close">✕</button>
+  </div>
+
+  <!-- 홈 화면 안내 모달 -->
+  <div id="pwa-modal-overlay" class="pwa-modal-overlay hidden">
+    <div class="pwa-modal">
+      <div class="pwa-modal-header">
+        <span>홈 화면에 추가하는 방법</span>
+        <button id="pwa-modal-close" class="pwa-close">✕</button>
+      </div>
+      <div class="pwa-modal-body">
+        <h4>Android (Chrome)</h4>
+        <ol>
+          <li>우측 상단 <strong>⋮</strong> 메뉴</li>
+          <li><strong>홈 화면에 추가</strong> 선택</li>
+          <li><strong>추가</strong> 확인</li>
+        </ol>
+        <h4>iPhone (Safari)</h4>
+        <ol>
+          <li>하단 <strong>공유 버튼</strong> (⎋) 탭</li>
+          <li><strong>홈 화면에 추가</strong> 선택</li>
+          <li><strong>추가</strong> 확인</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
   <!-- 탭 네비게이션 -->
   <nav class="tab-nav">
     <button class="tab active" data-tab="tab-planner">플래너</button>
