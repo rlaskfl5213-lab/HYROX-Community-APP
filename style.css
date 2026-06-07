@@ -29,7 +29,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--color-bg);
+  background: linear-gradient(180deg, #F8FAFF 0%, #EEF4FF 100%);
+  background-attachment: fixed;
   color: var(--color-text);
   line-height: 1.5;
   min-height: 100vh;
@@ -39,25 +40,48 @@ body {
 
 .header {
   text-align: center;
-  padding: 28px 16px 8px;
+  padding: 16px 16px 8px;
 }
 
-.logo {
-  font-size: 1.8rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+.brand-card {
+  background: #FFF4DD;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  max-width: var(--max-width);
+  margin: 0 auto;
 }
 
-.logo-we {
-  color: var(--color-text);
+.logo-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 56px;
+  overflow: hidden;
 }
 
-.logo-pace {
-  color: var(--color-primary);
+.logo-img {
+  height: 120px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
-.logo-dot {
-  color: var(--color-accent);
+@media (max-width: 480px) {
+  .logo-wrap {
+    height: 44px;
+  }
+
+  .logo-img {
+    height: 96px;
+  }
+
+  .brand-card {
+    padding: 10px 12px;
+  }
+
+  .brand-card {
+    padding: 12px;
+  }
 }
 
 /* --- 탭 네비게이션 --- */
@@ -79,8 +103,14 @@ body {
   border-radius: 999px;
   font-size: 0.82rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
   font-weight: 500;
+}
+
+.tab:hover:not(.active):not(:disabled) {
+  background: #EEF2FF;
+  border-color: #C7D2FE;
+  color: var(--color-primary);
 }
 
 .tab.active {
@@ -88,6 +118,7 @@ body {
   color: #fff;
   border-color: var(--color-primary);
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(33, 85, 255, 0.25);
 }
 
 .tab:disabled:not(.active) {
@@ -111,7 +142,7 @@ body {
   border-radius: var(--radius);
   padding: 24px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .card-title {
@@ -864,9 +895,33 @@ tbody tr:last-child td {
 .tp-color-row { border-left-color: var(--color-row); }
 .tp-color-ski { border-left-color: var(--color-ski); }
 
-.tp-color-run > label { color: var(--color-run); font-weight: 600; }
-.tp-color-row > label { color: var(--color-row); font-weight: 600; }
-.tp-color-ski > label { color: var(--color-ski); font-weight: 600; }
+.tp-color-run > label,
+.tp-color-row > label,
+.tp-color-ski > label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tp-color-run > label::before,
+.tp-color-row > label::before,
+.tp-color-ski > label::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tp-color-run > label { color: var(--color-run); }
+.tp-color-run > label::before { background: var(--color-run); }
+.tp-color-row > label { color: var(--color-row); }
+.tp-color-row > label::before { background: var(--color-row); }
+.tp-color-ski > label { color: var(--color-ski); }
+.tp-color-ski > label::before { background: var(--color-ski); }
 
 .tp-label-sub {
   font-weight: 400;
@@ -939,16 +994,23 @@ tbody tr:last-child td {
 }
 
 .tp-hyrox-card {
-  background: #FFFBEB;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
   border-color: #FDE68A;
+  box-shadow: 0 4px 24px rgba(253, 230, 138, 0.3);
+  padding: 28px 24px;
+}
+
+.tp-hyrox-card .card-title {
+  color: var(--color-text);
 }
 
 .tp-hyrox-pace {
-  font-size: 2rem;
+  font-size: 2.4rem;
   font-weight: 800;
   color: var(--color-primary);
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
 }
 
 .tp-hyrox-meta {
