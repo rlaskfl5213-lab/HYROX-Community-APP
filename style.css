@@ -55,33 +55,21 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 90px;
-  overflow: hidden;
 }
 
 .logo-img {
-  width: min(320px, 88vw);
+  width: min(260px, 78vw);
   height: auto;
   display: block;
-  transform: translateY(-18%);
 }
 
 @media (max-width: 480px) {
-  .logo-wrap {
-    height: 72px;
-  }
-
   .logo-img {
-    width: min(280px, 84vw);
-    transform: translateY(-18%);
+    width: min(220px, 72vw);
   }
 
   .brand-card {
     padding: 10px 12px;
-  }
-
-  .brand-card {
-    padding: 12px;
   }
 }
 
